@@ -1,0 +1,13 @@
+
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "io.github.danydevito111990_sys.kalendarzproczysty",
+      "sha256_cert_fingerprints": [
+        "8B:8A:6D:09:D0:02:DE:E7:56:DF:17:EF:B7:F4:97:4E:99:FB:6B:F6:D5:2D:BA:8F:4F:51:E6:11:A1:A1:8B:FC"
+      ]
+    }
+  }
+]
