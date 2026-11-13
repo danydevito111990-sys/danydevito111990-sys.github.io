@@ -1,24 +1,32 @@
 {
   "name": "PORTFEL+",
   "short_name": "PORTFEL+",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/portfel-plus/index.html",
+  "scope": "/portfel-plus/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#0754b3",
   "lang": "pl",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "id": "/portfel-plus/",
+  "description": "PORTFEL+ — domowy budżet offline"
 }
