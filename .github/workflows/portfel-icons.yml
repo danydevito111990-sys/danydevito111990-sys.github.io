@@ -19,12 +19,20 @@ jobs:
           import cairosvg
           for size in (192, 512):
               cairosvg.svg2png(url="portfel-plus/icon.svg",write_to=f"portfel-plus/icon-{size}.png",output_width=size,output_height=size)
+          import json, pathlib
+          manifest_path=pathlib.Path('portfel-plus/manifest.webmanifest')
+          manifest=json.loads(manifest_path.read_text())
+          manifest['icons']=[{'src':f'icon-{size}.png','sizes':f'{size}x{size}','type':'image/png','purpose':'any'} for size in (192,512)]
+          manifest_path.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\\n')
+          sw_path=pathlib.Path('portfel-plus/sw.js')
+          sw=sw_path.read_text().replace('portfel-plus-offline-v27','portfel-plus-offline-v28').replace("'./icon.svg'","'./icon.svg','./icon-192.png','./icon-512.png'")
+          sw_path.write_text(sw)
           PY
       - name: Commit generated icons
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add portfel-plus/icon-192.png portfel-plus/icon-512.png
+          git add portfel-plus/icon-192.png portfel-plus/icon-512.png portfel-plus/manifest.webmanifest portfel-plus/sw.js
           if ! git diff --cached --quiet; then
             git commit -m "Add installable PNG icons for PORTFEL+"
             git push
