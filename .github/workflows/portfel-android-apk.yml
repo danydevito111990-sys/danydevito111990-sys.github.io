@@ -1,0 +1,26 @@
+name: Build PORTFEL+ Android APK
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'portfel-android/**'
+      - '.github/workflows/portfel-android-apk.yml'
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Build installable APK
+        working-directory: portfel-android
+        run: gradle :app:assembleDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PORTFEL-PLUS-ANDROID-OFFLINE-APK
+          path: portfel-android/app/build/outputs/apk/debug/app-debug.apk
