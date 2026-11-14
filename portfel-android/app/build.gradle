@@ -2,7 +2,7 @@ plugins { id 'com.android.application' }
 android {
  namespace 'pl.portfelplus.offline'
  compileSdk 35
- defaultConfig { applicationId 'pl.portfelplus.stable'; minSdk 26; targetSdk 35; versionCode 9; versionName '3.8-stable' }
+ defaultConfig { applicationId 'pl.portfelplus.stable'; minSdk 26; targetSdk 35; versionCode 10; versionName '3.9-stable' }
  signingConfigs {
    release {
      storeFile file(System.getenv('PORTFEL_KEYSTORE_PATH') ?: 'missing-keystore.jks')
@@ -14,3 +14,13 @@ android {
  buildTypes { release { minifyEnabled false; signingConfig signingConfigs.release } }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
+
+tasks.register('installApprovedLogo') {
+    doLast {
+        def encoded = file('src/main/logo-approved.webp.base64').text.trim()
+        def target = file('src/main/res/drawable-nodpi/portfel_approved.webp')
+        target.parentFile.mkdirs()
+        target.bytes = java.util.Base64.getDecoder().decode(encoded)
+    }
+}
+tasks.named('preBuild').configure { dependsOn tasks.named('installApprovedLogo') }
