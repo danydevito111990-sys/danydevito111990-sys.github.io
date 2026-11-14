@@ -17,6 +17,9 @@ import android.webkit.JavascriptInterface;
 import android.util.Base64;
 import java.nio.charset.StandardCharsets;
 import java.io.OutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
 public class MainActivity extends Activity {
  private WebView web;
  private ValueCallback<Uri[]> fileCallback;
@@ -27,6 +30,26 @@ public class MainActivity extends Activity {
  @Override public void onCreate(Bundle state){super.onCreate(state);
  web=new WebView(this);setContentView(web);
  web.addJavascriptInterface(new Object(){
+ @JavascriptInterface public void shareInstallAndSync(String base64){
+ runOnUiThread(()->{try{
+ byte[] data=Base64.decode(base64,Base64.DEFAULT);
+ if(data.length>20*1024*1024)throw new Exception("Plik synchronizacji jest za duży");
+ File file=new File(getCacheDir(),"PORTFEL_SYNC.portfel");
+ try(FileOutputStream out=new FileOutputStream(file)){out.write(data);}
+ String authority=getPackageName()+".share";
+ Uri apk=new Uri.Builder().scheme("content").authority(authority).appendPath("PORTFEL_PLUS.apk").build();
+ Uri sync=new Uri.Builder().scheme("content").authority(authority).appendPath("PORTFEL_SYNC.portfel").build();
+ ArrayList<Uri> attachments=new ArrayList<>();attachments.add(apk);attachments.add(sync);
+ Intent send=new Intent(Intent.ACTION_SEND_MULTIPLE);
+ send.setType("application/octet-stream");send.putParcelableArrayListExtra(Intent.EXTRA_STREAM,attachments);
+ send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+ android.content.ClipData clip=new android.content.ClipData("PORTFEL+ files",new String[]{"application/octet-stream"},new android.content.ClipData.Item(apk));
+ clip.addItem(new android.content.ClipData.Item(sync));send.setClipData(clip);
+ send.putExtra(Intent.EXTRA_SUBJECT,"PORTFEL+ · instalator i synchronizacja");
+ send.putExtra(Intent.EXTRA_TEXT,"PORTFEL_PLUS.apk: instalator Android. PORTFEL_SYNC.portfel: plik do scalenia danych w aplikacji. Importuj tylko pliki od zaufanych osób.");
+ startActivity(Intent.createChooser(send,"Udostępnij PORTFEL+"));
+ }catch(Exception ex){new AlertDialog.Builder(MainActivity.this).setTitle("Udostępnianie PORTFEL+").setMessage(ex.getMessage()).setPositiveButton("OK",null).show();}});
+ }
  @JavascriptInterface public void exportFile(String filename,String mime,String base64){
  runOnUiThread(()->{try{pendingExport=Base64.decode(base64,Base64.DEFAULT);pendingMime=mime;
  Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);intent.addCategory(Intent.CATEGORY_OPENABLE);intent.setType(mime);intent.putExtra(Intent.EXTRA_TITLE,filename);
