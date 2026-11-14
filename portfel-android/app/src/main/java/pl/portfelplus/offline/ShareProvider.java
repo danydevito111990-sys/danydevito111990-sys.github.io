@@ -25,7 +25,7 @@ public class ShareProvider extends ContentProvider {
  @Override public Cursor query(Uri uri,String[] projection,String selection,String[] selectionArgs,String sortOrder){
   String[] cols=projection==null?new String[]{OpenableColumns.DISPLAY_NAME,OpenableColumns.SIZE}:projection;
   MatrixCursor c=new MatrixCursor(cols);Object[] row=new Object[cols.length];
-  try{File file=resolve(uri);for(int i=0;i<cols.length;i++){if(OpenableColumns.DISPLAY_NAME.equals(cols[i]))row[i]=file.getName();else if(OpenableColumns.SIZE.equals(cols[i]))row[i]=file.length();}}catch(Exception ignored){}
+  try{File file=resolve(uri);for(int i=0;i<cols.length;i++){if(OpenableColumns.DISPLAY_NAME.equals(cols[i]))row[i]="PORTFEL_PLUS.apk".equals(uri.getLastPathSegment())?"PORTFEL_PLUS.apk":"PORTFEL_SYNC.portfel";else if(OpenableColumns.SIZE.equals(cols[i]))row[i]=file.length();}}catch(Exception ignored){}
   c.addRow(row);return c;
  }
  @Override public Uri insert(Uri u,ContentValues v){throw new UnsupportedOperationException();}
