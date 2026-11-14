@@ -1,4 +1,4 @@
-name: Build PORTFEL+ Android APK
+name: Build PORTFEL+ signed Android APK
 on:
   workflow_dispatch:
   push:
@@ -21,12 +21,26 @@ jobs:
           gradle-version: '8.10.2'
       - name: Verify Android SDK
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
           test -d "$ANDROID_HOME/platforms/android-35" || "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-35"
-      - name: Build installable APK
+      - name: Check signing configuration
+        env:
+          KEYSTORE_B64: ${{ secrets.PORTFEL_KEYSTORE_B64 }}
+          STORE_PASSWORD: ${{ secrets.PORTFEL_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.PORTFEL_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.PORTFEL_KEY_PASSWORD }}
+        run: |
+          test -n "$KEYSTORE_B64" && test -n "$STORE_PASSWORD" && test -n "$KEY_ALIAS" && test -n "$KEY_PASSWORD" || { echo "::error::Configure PORTFEL signing secrets before building"; exit 1; }
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/portfel-release.jks"
+          chmod 600 "$RUNNER_TEMP/portfel-release.jks"
+      - name: Build stable signed release APK
         working-directory: portfel-android
-        run: gradle :app:assembleDebug --no-daemon
+        env:
+          PORTFEL_KEYSTORE_PATH: ${{ runner.temp }}/portfel-release.jks
+          PORTFEL_KEYSTORE_PASSWORD: ${{ secrets.PORTFEL_KEYSTORE_PASSWORD }}
+          PORTFEL_KEY_ALIAS: ${{ secrets.PORTFEL_KEY_ALIAS }}
+          PORTFEL_KEY_PASSWORD: ${{ secrets.PORTFEL_KEY_PASSWORD }}
+        run: gradle :app:assembleRelease --no-daemon
       - uses: actions/upload-artifact@v4
         with:
-          name: PORTFEL-PLUS-ANDROID-OFFLINE-APK
-          path: portfel-android/app/build/outputs/apk/debug/app-debug.apk
+          name: PORTFEL-PLUS-STABLE-SIGNED-APK
+          path: portfel-android/app/build/outputs/apk/release/app-release.apk
