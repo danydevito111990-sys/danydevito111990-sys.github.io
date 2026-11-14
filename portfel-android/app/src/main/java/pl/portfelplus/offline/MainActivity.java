@@ -50,7 +50,9 @@ public class MainActivity extends Activity {
  }catch(Exception ex){new AlertDialog.Builder(MainActivity.this).setTitle("Wysyłanie synchronizacji").setMessage(ex.getMessage()).setPositiveButton("OK",null).show();}});
  }
  @JavascriptInterface public void shareInstallAndSync(String base64){shareInstallAndSyncTo(base64,"","");}
- @JavascriptInterface public void shareInstallAndSyncTo(String base64,String email,String name){
+ @JavascriptInterface public void shareInviteWithChannel(String base64,String email,String name,String channel){shareInstallAndSyncToChannel(base64,email,name,channel);}
+ @JavascriptInterface public void shareInstallAndSyncTo(String base64,String email,String name){shareInstallAndSyncToChannel(base64,email,name,"choose");}
+ private void shareInstallAndSyncToChannel(String base64,String email,String name,String channel){
  runOnUiThread(()->{try{
  byte[] data=Base64.decode(base64,Base64.DEFAULT);
  if(data.length>20*1024*1024)throw new Exception("Plik synchronizacji jest za duży");
@@ -68,7 +70,9 @@ public class MainActivity extends Activity {
  send.putExtra(Intent.EXTRA_SUBJECT,"PORTFEL+ · instalator i synchronizacja");
  if(email!=null&&!email.trim().isEmpty())send.putExtra(Intent.EXTRA_EMAIL,new String[]{email.trim()});
  send.putExtra(Intent.EXTRA_TEXT,"PORTFEL_PLUS.apk: instalator Android. PORTFEL_SYNC.portfel: plik do scalenia danych w aplikacji. Importuj tylko pliki od zaufanych osób.");
- startActivity(Intent.createChooser(send,"Udostępnij PORTFEL+"));
+ if("messenger".equals(channel)){Intent messenger=new Intent(send);messenger.setPackage("com.facebook.orca");if(messenger.resolveActivity(getPackageManager())!=null){try{startActivity(messenger);return;}catch(Exception ignored){}}}
+ if("email".equals(channel)){send.setType("message/rfc822");}
+ startActivity(Intent.createChooser(send,"Wybierz aplikację do wysłania PORTFEL+"));
  }catch(Exception ex){new AlertDialog.Builder(MainActivity.this).setTitle("Udostępnianie PORTFEL+").setMessage(ex.getMessage()).setPositiveButton("OK",null).show();}});
  }
  @JavascriptInterface public void exportFile(String filename,String mime,String base64){
