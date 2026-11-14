@@ -30,7 +30,8 @@ public class MainActivity extends Activity {
  @Override public void onCreate(Bundle state){super.onCreate(state);
  web=new WebView(this);setContentView(web);
  web.addJavascriptInterface(new Object(){
- @JavascriptInterface public void shareInstallAndSync(String base64){
+ @JavascriptInterface public void shareInstallAndSync(String base64){shareInstallAndSyncTo(base64,"","");}
+ @JavascriptInterface public void shareInstallAndSyncTo(String base64,String email,String name){
  runOnUiThread(()->{try{
  byte[] data=Base64.decode(base64,Base64.DEFAULT);
  if(data.length>20*1024*1024)throw new Exception("Plik synchronizacji jest za duży");
@@ -46,6 +47,7 @@ public class MainActivity extends Activity {
  android.content.ClipData clip=new android.content.ClipData("PORTFEL+ files",new String[]{"application/octet-stream"},new android.content.ClipData.Item(apk));
  clip.addItem(new android.content.ClipData.Item(sync));send.setClipData(clip);
  send.putExtra(Intent.EXTRA_SUBJECT,"PORTFEL+ · instalator i synchronizacja");
+ if(email!=null&&!email.trim().isEmpty())send.putExtra(Intent.EXTRA_EMAIL,new String[]{email.trim()});
  send.putExtra(Intent.EXTRA_TEXT,"PORTFEL_PLUS.apk: instalator Android. PORTFEL_SYNC.portfel: plik do scalenia danych w aplikacji. Importuj tylko pliki od zaufanych osób.");
  startActivity(Intent.createChooser(send,"Udostępnij PORTFEL+"));
  }catch(Exception ex){new AlertDialog.Builder(MainActivity.this).setTitle("Udostępnianie PORTFEL+").setMessage(ex.getMessage()).setPositiveButton("OK",null).show();}});
