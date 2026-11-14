@@ -56,3 +56,4 @@ jobs:
           fi
           gh release upload portfel-latest "$RUNNER_TEMP/PORTFEL_PLUS.apk" --clobber
           gh release view portfel-latest --json assets --jq '.assets[].name' | grep -Fx PORTFEL_PLUS.apk
+          echo 'Installer published: https://github.com/${{ github.repository }}/releases/download/portfel-latest/PORTFEL_PLUS.apk'
