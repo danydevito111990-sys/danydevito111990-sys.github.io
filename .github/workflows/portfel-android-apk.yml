@@ -45,21 +45,14 @@ jobs:
           name: PORTFEL-PLUS-STABLE-SIGNED-APK
           path: portfel-android/app/build/outputs/apk/release/app-release.apk
 
-      - name: Prepare public installer asset
-        run: cp portfel-android/app/build/outputs/apk/release/app-release.apk PORTFEL_PLUS.apk
-      - name: Publish or replace stable release asset
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: portfel-latest
-          name: PORTFEL+ - aktualny instalator Android
-          body: Czysta instalacja bez danych rodzinnych i synchronizacji. Plik PORTFEL_SYNC.portfel przesyła się osobno.
-          files: PORTFEL_PLUS.apk
-          overwrite_files: true
-          draft: false
-          prerelease: false
-          make_latest: true
-      - name: Verify public installer exists
+      - name: Publish installer to stable release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
+          cp portfel-android/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/PORTFEL_PLUS.apk"
+          if ! gh release view portfel-latest >/dev/null 2>&1; then
+            gh release create portfel-latest --title "PORTFEL+ - aktualny instalator Android" --notes "Czysty instalator bez danych. Synchronizacja .portfel jest przesyłana osobno." --target "$GITHUB_SHA" --latest
+          fi
+          gh release upload portfel-latest "$RUNNER_TEMP/PORTFEL_PLUS.apk" --clobber
           gh release view portfel-latest --json assets --jq '.assets[].name' | grep -Fx PORTFEL_PLUS.apk
