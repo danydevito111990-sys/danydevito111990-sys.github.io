@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.io.OutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 public class MainActivity extends Activity {
  private WebView web;
@@ -104,6 +106,26 @@ public class MainActivity extends Activity {
  }
  });
  web.loadUrl("file:///android_asset/index.html");
+ web.setWebViewClient(new android.webkit.WebViewClient(){@Override public void onPageFinished(WebView v,String url){handleIncoming(getIntent());}});
+ }
+ @Override protected void onNewIntent(Intent intent){super.onNewIntent(intent);setIntent(intent);handleIncoming(intent);}
+ private void handleIncoming(Intent intent){
+ if(intent==null)return;
+ String action=intent.getAction();if(!Intent.ACTION_VIEW.equals(action)&&!Intent.ACTION_SEND.equals(action))return;
+ Uri uri=Intent.ACTION_VIEW.equals(action)?intent.getData():(Uri)intent.getParcelableExtra(Intent.EXTRA_STREAM);
+ if(uri==null)return;
+ try{
+ String name="";
+ try(android.database.Cursor cursor=getContentResolver().query(uri,new String[]{android.provider.OpenableColumns.DISPLAY_NAME},null,null,null)){
+ if(cursor!=null&&cursor.moveToFirst())name=cursor.getString(0);
+ }catch(Exception ignored){}
+ if(name==null)name="";
+ if(!name.toLowerCase(java.util.Locale.ROOT).endsWith(".portfel")){new AlertDialog.Builder(this).setMessage("To nie jest plik .portfel.").setPositiveButton("OK",null).show();return;}
+ ByteArrayOutputStream out=new ByteArrayOutputStream();
+ try(InputStream in=getContentResolver().openInputStream(uri)){if(in==null)throw new Exception("Nie można odczytać pliku");byte[] buffer=new byte[8192];int n;while((n=in.read(buffer))!=-1){out.write(buffer,0,n);if(out.size()>20*1024*1024)throw new Exception("Plik jest zbyt duży");}}
+ String encoded=Base64.encodeToString(out.toByteArray(),Base64.NO_WRAP);
+ new AlertDialog.Builder(this).setTitle("PORTFEL+ · synchronizacja").setMessage("Wczytać otrzymany plik .portfel i scalić wspólne dane?").setPositiveButton("Scal", (d,w)->web.evaluateJavascript("window.portfelImportFromAndroid('"+encoded+"')",null)).setNegativeButton("Anuluj",null).show();
+ }catch(Exception e){new AlertDialog.Builder(this).setTitle("Błąd pliku").setMessage(e.getMessage()).setPositiveButton("OK",null).show();}
  }
  @Override protected void onActivityResult(int request,int result,Intent data){super.onActivityResult(request,result,data);if(request==EXPORT_FILE){if(result==RESULT_OK&&data!=null&&data.getData()!=null&&pendingExport!=null){try(OutputStream out=getContentResolver().openOutputStream(data.getData())){if(out==null)throw new Exception("Nie można otworzyć pliku");out.write(pendingExport);new AlertDialog.Builder(this).setTitle("PORTFEL+").setMessage("Kopia danych została zapisana.").setPositiveButton("OK",null).show();}catch(Exception e){new AlertDialog.Builder(this).setTitle("Błąd eksportu").setMessage(e.getMessage()).setPositiveButton("OK",null).show();}}pendingExport=null;return;}if(request==FILE_PICK&&fileCallback!=null){fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result,data));fileCallback=null;}}
  @Override public void onBackPressed(){if(web.canGoBack())web.goBack();else super.onBackPressed();}
