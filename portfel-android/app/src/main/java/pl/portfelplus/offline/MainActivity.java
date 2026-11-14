@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
  String link="https://github.com/danydevito111990-sys/danydevito111990-sys.github.io/releases/download/portfel-latest/PORTFEL_PLUS.apk";
  Intent send=new Intent(Intent.ACTION_SEND);send.setType("text/plain");
  send.putExtra(Intent.EXTRA_SUBJECT,"PORTFEL+ - instalacja Android");
- send.putExtra(Intent.EXTRA_TEXT,"PORTFEL+ - czysta instalacja Android\\n\\n"+link+"\\n\\nPlik synchronizacji prześlę osobno.");
+ send.putExtra(Intent.EXTRA_TEXT,link);
  startActivity(Intent.createChooser(send,"Wyślij link do instalatora"));
  }catch(Exception ex){new AlertDialog.Builder(MainActivity.this).setMessage(ex.getMessage()).setPositiveButton("OK",null).show();}});
  }
