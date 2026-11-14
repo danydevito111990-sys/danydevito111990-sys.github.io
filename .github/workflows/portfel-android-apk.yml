@@ -6,7 +6,7 @@ on:
       - 'portfel-android/**'
       - '.github/workflows/portfel-android-apk.yml'
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -44,3 +44,14 @@ jobs:
         with:
           name: PORTFEL-PLUS-STABLE-SIGNED-APK
           path: portfel-android/app/build/outputs/apk/release/app-release.apk
+
+      - name: Publish clean installer at stable download URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp portfel-android/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/PORTFEL_PLUS.apk"
+          if gh release view portfel-latest >/dev/null 2>&1; then
+            gh release upload portfel-latest "$RUNNER_TEMP/PORTFEL_PLUS.apk" --clobber
+          else
+            gh release create portfel-latest "$RUNNER_TEMP/PORTFEL_PLUS.apk" --title "PORTFEL+ - aktualny instalator Android" --notes "Czysty instalator bez danych synchronizacji. Aplikacja działa offline." --target "$GITHUB_SHA"
+          fi
