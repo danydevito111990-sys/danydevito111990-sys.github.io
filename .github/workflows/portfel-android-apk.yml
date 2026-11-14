@@ -10,6 +10,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -51,9 +53,15 @@ jobs:
         run: |
           set -euo pipefail
           cp portfel-android/app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/PORTFEL_PLUS.apk"
-          if ! gh release view portfel-latest >/dev/null 2>&1; then
+          echo "Checking release portfel-latest..."
+          if ! gh release view portfel-latest --json id --jq .id >/dev/null 2>&1; then
             gh release create portfel-latest --title "PORTFEL+ - aktualny instalator Android" --notes "Czysty instalator bez danych. Synchronizacja .portfel jest przesyłana osobno." --target "$GITHUB_SHA" --latest
           fi
+          echo "Uploading signed APK without editing existing release metadata..."
           gh release upload portfel-latest "$RUNNER_TEMP/PORTFEL_PLUS.apk" --clobber
           gh release view portfel-latest --json assets --jq '.assets[].name' | grep -Fx PORTFEL_PLUS.apk
-          echo 'Installer published: https://github.com/${{ github.repository }}/releases/download/portfel-latest/PORTFEL_PLUS.apk'
+          URL='https://github.com/${{ github.repository }}/releases/download/portfel-latest/PORTFEL_PLUS.apk'
+          HTTP=$(curl -L -s -o /dev/null -w '%{http_code}' --range 0-0 "$URL")
+          echo "Public installer HTTP status: $HTTP"
+          if [ "$HTTP" != '200' ] && [ "$HTTP" != '206' ]; then echo "::error::Public APK link not downloadable (HTTP $HTTP)"; exit 1; fi
+          echo "Installer published and downloadable: $URL"
