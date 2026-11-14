@@ -58,6 +58,8 @@ public class MainActivity extends Activity {
  if(data.length>20*1024*1024)throw new Exception("Plik synchronizacji jest za duży");
  File file=new File(getCacheDir(),"PORTFEL_SYNC.portfel");
  try(FileOutputStream out=new FileOutputStream(file)){out.write(data);}
+ File installedApk=new File(getApplicationInfo().sourceDir);
+ if(!installedApk.isFile()||!installedApk.canRead()||!file.isFile()||file.length()==0)throw new Exception("Nie można przygotować instalatora APK lub pliku synchronizacji.");
  String authority=getPackageName()+".share";
  Uri apk=new Uri.Builder().scheme("content").authority(authority).appendPath("PORTFEL_PLUS.apk").build();
  Uri sync=new Uri.Builder().scheme("content").authority(authority).appendPath("PORTFEL_SYNC.portfel").build();
@@ -71,8 +73,17 @@ public class MainActivity extends Activity {
  if(email!=null&&!email.trim().isEmpty())send.putExtra(Intent.EXTRA_EMAIL,new String[]{email.trim()});
  send.putExtra(Intent.EXTRA_TEXT,"PORTFEL_PLUS.apk: instalator Android. PORTFEL_SYNC.portfel: plik do scalenia danych w aplikacji. Importuj tylko pliki od zaufanych osób.");
  if("messenger".equals(channel)){Intent messenger=new Intent(send);messenger.setPackage("com.facebook.orca");if(messenger.resolveActivity(getPackageManager())!=null){try{startActivity(messenger);return;}catch(Exception ignored){}}}
- if("email".equals(channel)){send.setType("message/rfc822");}
- startActivity(Intent.createChooser(send,"Wybierz aplikację do wysłania PORTFEL+"));
+ if("email".equals(channel)){
+   // Selector filters to mail-capable apps while retaining both attachment URIs on SEND_MULTIPLE.
+   Intent emailSelector=new Intent(Intent.ACTION_SENDTO);
+   emailSelector.setData(Uri.parse("mailto:"));
+   send.setSelector(emailSelector);
+   try{startActivity(Intent.createChooser(send,"Wyślij e-mailem: APK + synchronizacja"));return;}
+   catch(android.content.ActivityNotFoundException notFound){
+     send.setSelector(null);send.setType("message/rfc822");
+   }
+ }
+ startActivity(Intent.createChooser(send,"Wybierz komunikator lub pocztę"));
  }catch(Exception ex){new AlertDialog.Builder(MainActivity.this).setTitle("Udostępnianie PORTFEL+").setMessage(ex.getMessage()).setPositiveButton("OK",null).show();}});
  }
  @JavascriptInterface public void exportFile(String filename,String mime,String base64){
