@@ -13,12 +13,27 @@ import android.webkit.JsResult;
 import android.webkit.ValueCallback;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.webkit.JavascriptInterface;
+import android.util.Base64;
+import java.nio.charset.StandardCharsets;
+import java.io.OutputStream;
 public class MainActivity extends Activity {
  private WebView web;
  private ValueCallback<Uri[]> fileCallback;
  private static final int FILE_PICK=12;
+ private static final int EXPORT_FILE=13;
+ private byte[] pendingExport;
+ private String pendingMime;
  @Override public void onCreate(Bundle state){super.onCreate(state);
  web=new WebView(this);setContentView(web);
+ web.addJavascriptInterface(new Object(){
+ @JavascriptInterface public void exportFile(String filename,String mime,String base64){
+ runOnUiThread(()->{try{pendingExport=Base64.decode(base64,Base64.DEFAULT);pendingMime=mime;
+ Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);intent.addCategory(Intent.CATEGORY_OPENABLE);intent.setType(mime);intent.putExtra(Intent.EXTRA_TITLE,filename);
+ startActivityForResult(intent,EXPORT_FILE);
+ }catch(Exception ex){pendingExport=null;new AlertDialog.Builder(MainActivity.this).setTitle("PORTFEL+").setMessage("Nie można rozpocząć eksportu: "+ex.getMessage()).setPositiveButton("OK",null).show();}});
+ }
+ },"PortfelAndroid");
  WebSettings s=web.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);
  web.setWebChromeClient(new WebChromeClient(){
  @Override public boolean onShowFileChooser(WebView v,ValueCallback<Uri[]> cb,FileChooserParams params){if(fileCallback!=null)fileCallback.onReceiveValue(null);fileCallback=cb;try{Intent i=params.createIntent();startActivityForResult(i,FILE_PICK);return true;}catch(Exception e){fileCallback=null;return false;}}
@@ -48,6 +63,6 @@ public class MainActivity extends Activity {
  });
  web.loadUrl("file:///android_asset/index.html");
  }
- @Override protected void onActivityResult(int request,int result,Intent data){super.onActivityResult(request,result,data);if(request==FILE_PICK&&fileCallback!=null){fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result,data));fileCallback=null;}}
+ @Override protected void onActivityResult(int request,int result,Intent data){super.onActivityResult(request,result,data);if(request==EXPORT_FILE){if(result==RESULT_OK&&data!=null&&data.getData()!=null&&pendingExport!=null){try(OutputStream out=getContentResolver().openOutputStream(data.getData())){if(out==null)throw new Exception("Nie można otworzyć pliku");out.write(pendingExport);new AlertDialog.Builder(this).setTitle("PORTFEL+").setMessage("Kopia danych została zapisana.").setPositiveButton("OK",null).show();}catch(Exception e){new AlertDialog.Builder(this).setTitle("Błąd eksportu").setMessage(e.getMessage()).setPositiveButton("OK",null).show();}}pendingExport=null;return;}if(request==FILE_PICK&&fileCallback!=null){fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result,data));fileCallback=null;}}
  @Override public void onBackPressed(){if(web.canGoBack())web.goBack();else super.onBackPressed();}
 }
