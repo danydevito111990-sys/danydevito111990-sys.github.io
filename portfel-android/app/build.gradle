@@ -2,7 +2,7 @@ plugins { id 'com.android.application' }
 android {
  namespace 'pl.portfelplus.offline'
  compileSdk 35
- defaultConfig { applicationId 'pl.portfelplus.stable'; minSdk 26; targetSdk 35; versionCode 5; versionName '3.4-stable' }
+ defaultConfig { applicationId 'pl.portfelplus.stable'; minSdk 26; targetSdk 35; versionCode 6; versionName '3.5-stable' }
  signingConfigs {
    release {
      storeFile file(System.getenv('PORTFEL_KEYSTORE_PATH') ?: 'missing-keystore.jks')
