@@ -1,6 +1,16 @@
 plugins { id 'com.android.application' }
-android { namespace 'pl.portfelplus.offline'; compileSdk 35
- defaultConfig { applicationId 'pl.portfelplus.offline'; minSdk 26; targetSdk 28; versionCode 3; versionName '2.8-offline' }
- buildTypes { release { minifyEnabled false } }
+android {
+ namespace 'pl.portfelplus.offline'
+ compileSdk 35
+ defaultConfig { applicationId 'pl.portfelplus.offline'; minSdk 26; targetSdk 28; versionCode 4; versionName '2.9-offline' }
+ signingConfigs {
+   release {
+     storeFile file(System.getenv('PORTFEL_KEYSTORE_PATH') ?: 'missing-keystore.jks')
+     storePassword System.getenv('PORTFEL_KEYSTORE_PASSWORD') ?: ''
+     keyAlias System.getenv('PORTFEL_KEY_ALIAS') ?: ''
+     keyPassword System.getenv('PORTFEL_KEY_PASSWORD') ?: ''
+   }
+ }
+ buildTypes { release { minifyEnabled false; signingConfig signingConfigs.release } }
  compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
 }
