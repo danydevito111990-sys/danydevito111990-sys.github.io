@@ -30,6 +30,23 @@ public class MainActivity extends Activity {
  @Override public void onCreate(Bundle state){super.onCreate(state);
  web=new WebView(this);setContentView(web);
  web.addJavascriptInterface(new Object(){
+ @JavascriptInterface public void shareSyncOnly(String base64){
+ runOnUiThread(()->{try{
+ byte[] data=Base64.decode(base64,Base64.DEFAULT);
+ if(data.length>20*1024*1024)throw new Exception("Plik synchronizacji jest za duży");
+ File file=new File(getCacheDir(),"PORTFEL_SYNC.portfel");
+ try(FileOutputStream out=new FileOutputStream(file)){out.write(data);}
+ Uri uri=new Uri.Builder().scheme("content").authority(getPackageName()+".share").appendPath("PORTFEL_SYNC.portfel").build();
+ Intent send=new Intent(Intent.ACTION_SEND);
+ send.setType("application/octet-stream");
+ send.putExtra(Intent.EXTRA_STREAM,uri);
+ send.putExtra(Intent.EXTRA_SUBJECT,"PORTFEL+ · plik synchronizacji");
+ send.putExtra(Intent.EXTRA_TEXT,"Plik synchronizacji PORTFEL+. Otwórz PORTFEL+ → Ustawienia → Synchronizacja → Scal plik .portfel.");
+ send.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+ send.setClipData(android.content.ClipData.newUri(getContentResolver(),"PORTFEL_SYNC.portfel",uri));
+ startActivity(Intent.createChooser(send,"Wyślij synchronizację PORTFEL+"));
+ }catch(Exception ex){new AlertDialog.Builder(MainActivity.this).setTitle("Wysyłanie synchronizacji").setMessage(ex.getMessage()).setPositiveButton("OK",null).show();}});
+ }
  @JavascriptInterface public void shareInstallAndSync(String base64){shareInstallAndSyncTo(base64,"","");}
  @JavascriptInterface public void shareInstallAndSyncTo(String base64,String email,String name){
  runOnUiThread(()->{try{
