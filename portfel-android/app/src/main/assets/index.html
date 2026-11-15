@@ -131,8 +131,8 @@ async function pinHash(pin,salt){const bytes=new TextEncoder().encode(salt+':'+p
 async function authorizeDeletion(){const record=localStorage.getItem(PIN_KEY);if(!record){alert('Najpierw ustaw PIN administratora w Ustawieniach. Usuwanie jest zablokowane.');return false}if(!crypto.subtle){alert('Ta przeglądarka nie obsługuje bezpiecznej weryfikacji PIN.');return false}let data;try{data=JSON.parse(record)}catch{return false}const pin=prompt('Podaj PIN administratora, aby zatwierdzić usunięcie:');if(pin===null)return false;const ok=await pinHash(pin,data.salt)===data.hash;if(!ok)alert('Nieprawidłowy PIN administratora.');return ok}
 async function authorizeFamilyAdmin(){const record=db.familyPinVerifier||localStorage.getItem(PIN_KEY);if(!record){alert('Administrator musi najpierw ustawić PIN i przesłać nowy plik .portfel.');return false}if(!crypto.subtle)return false;let data;try{data=typeof record==='string'?JSON.parse(record):record}catch{return false}const pin=prompt('PIN administratora tej rodziny:');if(pin===null)return false;const ok=await pinHash(pin,data.salt)===data.hash;if(!ok)alert('Nieprawidłowy PIN administratora.');return ok}
 async function configurePin(){if(!crypto.subtle)return alert('Ta przeglądarka nie obsługuje bezpiecznego ustawiania PIN.');if(localStorage.getItem(PIN_KEY)){if(!await authorizeDeletion())return}const pin=prompt('Ustaw nowy PIN administratora (4–8 cyfr):');if(pin===null)return;if(!/^\d{4,8}$/.test(pin))return alert('PIN musi mieć 4–8 cyfr.');const again=prompt('Powtórz nowy PIN:');if(again!==pin)return alert('Kody PIN nie są identyczne.');const salt=Array.from(crypto.getRandomValues(new Uint8Array(16))).map(x=>x.toString(16).padStart(2,'0')).join('');const verifier={salt,hash:await pinHash(pin,salt)};localStorage.setItem(PIN_KEY,JSON.stringify(verifier));db.familyPinVerifier=verifier;save();alert('PIN administratora został ustawiony.');render()}
-window.portfelImportFromAndroid=function(encoded){try{const binary=atob(encoded),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);const incoming=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));mergePortfelData(incoming)}catch(e){alert('Nie można scalić pliku synchronizacji: '+e.message)}};
-function mergePortfelData(incoming){
+window.portfelImportFromAndroid=async function(encoded){try{const binary=atob(encoded),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);const incoming=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));await mergePortfelData(incoming)}catch(e){alert('Nie można scalić pliku synchronizacji: '+e.message)}};
+async function mergePortfelData(incoming){
 const before=JSON.stringify(db);
 try{
 if(incoming.app!=='PORTFEL_SYNC'||incoming.schema!==2||typeof incoming.familyId!=='string'||incoming.familyId.length<12||!Array.isArray(incoming.expenses)||!Array.isArray(incoming.members)||!Array.isArray(incoming.deletedIds))throw Error('Nieprawidłowy plik lub stary format bez identyfikatora rodziny. Poproś administratora o nowy eksport.');
@@ -142,10 +142,20 @@ if(!incoming.expenses.every(valid))throw Error('Niepoprawne dane transakcji');
 if(!incoming.members.every(m=>m&&typeof m.id==='string'&&typeof m.name==='string'))throw Error('Niepoprawna lista domowników');
 if(typeof incoming.familyOwnerId!=='string'||!incoming.members.some(m=>m.id===incoming.familyOwnerId))throw Error('Plik nie ma poprawnego właściciela rodziny.');
 const same=db.familyId===incoming.familyId;
-if(same&&(incoming.familyAdminEpoch||0)!==(db.familyAdminEpoch||0))throw Error('Inna wersja administracji rodziny. Wymagane podpisane przekazanie uprawnień.');
+if(same&&((incoming.familyAdminEpoch||0)!==(db.familyAdminEpoch||0)||incoming.familyOwnerId!==db.familyOwnerId)){
+ if(!db.familyPublicKey)throw Error('Brak zaufanego klucza administratora. Najpierw zsynchronizuj plik źródłowy z kluczem podpisu.');
+ if(!await verifyTransfer(incoming.familyTransfer,db.familyPublicKey))throw Error('Nieprawidłowy podpis przekazania administracji.');
+ if(incoming.familyOwnerId!==incoming.familyTransfer.to||incoming.familyAdminEpoch!==incoming.familyTransfer.epoch)throw Error('Niezgodny nowy administrator.');
+ const oldOwner=db.familyOwnerId;
+ db.familyOwnerId=incoming.familyOwnerId;db.familyAdminEpoch=incoming.familyAdminEpoch;db.familyTransfer=incoming.familyTransfer;
+ db.familyPinVerifier=incoming.familyTransfer.verifier;
+ db.members=db.members.map(m=>({...m,role:m.id===db.familyOwnerId?'admin':'user'}));
+ if(db.activeMemberId===db.familyOwnerId){db.familyJoined=false;localStorage.setItem(PIN_KEY,JSON.stringify(db.familyPinVerifier));}
+ else{db.familyJoined=true;localStorage.removeItem(PIN_KEY);}
+ localStorage.removeItem(ADMIN_KEY);
+}
 if(same&&db.familyJoined&&incoming.familyPublicKey&&!db.familyPublicKey&&incoming.familyOwnerId===db.familyOwnerId)db.familyPublicKey=incoming.familyPublicKey;
 if(same&&db.familyJoined&&incoming.familyPinVerifier&&!db.familyPinVerifier&&incoming.familyOwnerId===db.familyOwnerId)db.familyPinVerifier=incoming.familyPinVerifier;
-if(same&&db.familyOwnerId!==incoming.familyOwnerId)throw Error('Niezgodny administrator rodziny. Scalanie zostało zablokowane.');
 if(!same&&!(db.expenses.length===0&&db.members.length===1&&!db.familyJoined))throw Error('Plik należy do innej rodziny. Nie można scalać danych różnych rodzin.');
 if(!same){
 const fresh=db.expenses.length===0&&db.members.length===1&&!db.familyJoined;
