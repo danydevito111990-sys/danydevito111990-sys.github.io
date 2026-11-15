@@ -181,14 +181,14 @@ db.adminSignature=incoming.adminSignature||null;db.familyId=incoming.familyId;db
 db.members=incoming.members.map(m=>({id:m.id,name:m.name,role:m.id===db.familyOwnerId?'admin':'user',permissions:m.permissions||{}}));
 const available=db.members.filter(m=>m.id!==db.familyOwnerId);if(!available.length)throw Error('Administrator musi dodać odbiorcę jako domownika przed wysłaniem pliku.');const chosen=prompt('Podaj dokładne imię domownika, który będzie używał tego telefonu:');const match=available.find(m=>m.name.trim().toLocaleLowerCase('pl')===String(chosen||'').trim().toLocaleLowerCase('pl'));if(!match)throw Error('Nie znaleziono domownika. Import anulowany.');db.activeMemberId=match.id;
 }else{
-for(const m of incoming.members){const old=db.members.find(x=>x.id===m.id);if(!old)db.members.push({id:m.id,name:m.name,role:m.id===db.familyOwnerId?'admin':'user',permissions:db.familyJoined?{}:(m.permissions||{})});else if(m.id!==db.familyOwnerId){old.name=m.name;if(db.familyJoined&&m.permissions&&typeof m.permissions==='object')old.permissions=m.permissions;}}
+for(const m of incoming.members){const old=db.members.find(x=>x.id===m.id);if(!old)db.members.push({id:m.id,name:m.name,role:m.id===db.familyOwnerId?'admin':'user',permissions:incoming.adminSignature?(m.permissions||{}):{}});else if(m.id!==db.familyOwnerId&&incoming.adminSignature){old.name=m.name;if(m.permissions&&typeof m.permissions==='object')old.permissions=m.permissions;}}
 }
 const existing=new Map(db.expenses.map(e=>[e.id,e]));let added=0,conflicts=0;
 for(const e of incoming.expenses){const old=existing.get(e.id);if(!old){db.expenses.push(e);existing.set(e.id,e);added++}else if(JSON.stringify(old)!==JSON.stringify(e))conflicts++;}
 db.syncConflicts=db.syncConflicts||[];
 for(const e of incoming.expenses){const old=existing.get(e.id);if(old&&JSON.stringify(old)!==JSON.stringify(e)&&!db.syncConflicts.some(c=>c.id===e.id&&JSON.stringify(c.incoming)===JSON.stringify(e)))db.syncConflicts.push({id:e.id,incoming:e})}
-for(const c of incoming.categories||[]){if(typeof c==='string'&&!db.categories.includes(c))db.categories.push(c)}
-for(const item of incoming.billItems||[]){if(typeof item==='string'&&!db.billItems.includes(item))db.billItems.push(item)}
+for(const c of (incoming.adminSignature?incoming.categories:[])||[]){if(typeof c==='string'&&!db.categories.includes(c))db.categories.push(c)}
+for(const item of (incoming.adminSignature?incoming.billItems:[])||[]){if(typeof item==='string'&&!db.billItems.includes(item))db.billItems.push(item)}
 db.deletedIds=[...new Set([...(db.deletedIds||[]),...incoming.deletedIds.filter(x=>typeof x==='string')])];
 save();render();alert('Scalono rodzinę. Nowe wpisy: '+added+'. Konflikty: '+conflicts+'. Role i uprawnienia wymagają potwierdzenia administratora.');
 }catch(error){db=JSON.parse(before);if(beforePin===null)localStorage.removeItem(PIN_KEY);else localStorage.setItem(PIN_KEY,beforePin);if(beforeAdminKey===null)localStorage.removeItem(ADMIN_KEY);else localStorage.setItem(ADMIN_KEY,beforeAdminKey);throw error}
