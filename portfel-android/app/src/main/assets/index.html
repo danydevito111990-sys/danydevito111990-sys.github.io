@@ -138,6 +138,7 @@ async function configurePin(){if(!crypto.subtle)return alert('Ta przeglądarka n
 window.portfelImportFromAndroid=async function(encoded){try{const binary=atob(encoded),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);const incoming=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));await mergePortfelData(incoming)}catch(e){alert('Nie można scalić pliku synchronizacji: '+e.message)}};
 async function mergePortfelData(incoming){
 const before=JSON.stringify(db);
+const beforePin=localStorage.getItem(PIN_KEY),beforeAdminKey=localStorage.getItem(ADMIN_KEY);
 try{
 if(incoming.app!=='PORTFEL_SYNC'||incoming.schema!==2||typeof incoming.familyId!=='string'||incoming.familyId.length<12||!Array.isArray(incoming.expenses)||!Array.isArray(incoming.members)||!Array.isArray(incoming.deletedIds))throw Error('Nieprawidłowy plik lub stary format bez identyfikatora rodziny. Poproś administratora o nowy eksport.');
 if(incoming.expenses.length>100000)throw Error('Plik przekracza limit wpisów');
@@ -159,7 +160,9 @@ if(same&&((incoming.familyAdminEpoch||0)!==(db.familyAdminEpoch||0)||incoming.fa
  else{db.familyJoined=true;localStorage.removeItem(PIN_KEY);}
  if(db.activeMemberId!==db.familyOwnerId)localStorage.removeItem(ADMIN_KEY);
 }
+if(same&&db.familyPublicKey&&incoming.familyPublicKey&&JSON.stringify(db.familyPublicKey)!==JSON.stringify(incoming.familyPublicKey)&&incoming.familyOwnerId===db.familyOwnerId&&incoming.familyAdminEpoch===db.familyAdminEpoch)throw Error('Plik zawiera niezgodny klucz rodziny.');
 if(same&&db.familyJoined&&incoming.familyPublicKey&&!db.familyPublicKey&&incoming.familyOwnerId===db.familyOwnerId){if(!confirm('Zaufaj kluczowi podpisu administratora rodziny? Potwierdź jego pochodzenie poza aplikacją.'))throw Error('Nie zatwierdzono klucza rodziny.');db.familyPublicKey=incoming.familyPublicKey;}
+if(same&&db.familyJoined&&incoming.familyPinVerifier&&db.familyPinVerifier&&JSON.stringify(incoming.familyPinVerifier)!==JSON.stringify(db.familyPinVerifier)&&incoming.familyAdminEpoch===db.familyAdminEpoch)throw Error('Plik zawiera nieautoryzowaną zmianę PIN administratora.');
 if(same&&db.familyJoined&&incoming.familyPinVerifier&&!db.familyPinVerifier&&incoming.familyOwnerId===db.familyOwnerId)db.familyPinVerifier=incoming.familyPinVerifier;
 if(!same&&!(db.expenses.length===0&&db.members.length===1&&!db.familyJoined))throw Error('Plik należy do innej rodziny. Nie można scalać danych różnych rodzin.');
 if(!same){
@@ -182,7 +185,7 @@ for(const c of incoming.categories||[]){if(typeof c==='string'&&!db.categories.i
 for(const item of incoming.billItems||[]){if(typeof item==='string'&&!db.billItems.includes(item))db.billItems.push(item)}
 db.deletedIds=[...new Set([...(db.deletedIds||[]),...incoming.deletedIds.filter(x=>typeof x==='string')])];
 save();render();alert('Scalono rodzinę. Nowe wpisy: '+added+'. Konflikty: '+conflicts+'. Role i uprawnienia wymagają potwierdzenia administratora.');
-}catch(error){db=JSON.parse(before);throw error}
+}catch(error){db=JSON.parse(before);if(beforePin===null)localStorage.removeItem(PIN_KEY);else localStorage.setItem(PIN_KEY,beforePin);if(beforeAdminKey===null)localStorage.removeItem(ADMIN_KEY);else localStorage.setItem(ADMIN_KEY,beforeAdminKey);throw error}
 
 }
 function syncPayload(){return {app:'PORTFEL_SYNC',schema:2,familyId:db.familyId,familyOwnerId:db.familyOwnerId,familyAdminEpoch:db.familyAdminEpoch||0,familyPublicKey:db.familyPublicKey||null,familyTransfer:db.familyTransfer||null,familyPinVerifier:(!db.familyJoined?(db.familyPinVerifier||JSON.parse(localStorage.getItem(PIN_KEY)||'null')):db.familyPinVerifier)||null,exportedAt:new Date().toISOString(),members:db.members.map(m=>({id:m.id,name:m.name,permissions:m.permissions||{}})),categories:db.categories,billItems:db.billItems,expenses:db.expenses.filter(e=>e.visibility==='shared'),deletedIds:db.deletedIds||[]};}
