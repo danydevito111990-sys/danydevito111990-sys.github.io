@@ -123,7 +123,7 @@ if(!incoming.members.every(m=>m&&typeof m.id==='string'&&typeof m.name==='string
 if(typeof incoming.familyOwnerId!=='string'||!incoming.members.some(m=>m.id===incoming.familyOwnerId))throw Error('Plik nie ma poprawnego właściciela rodziny.');
 const same=db.familyId===incoming.familyId;
 if(same&&db.familyAdminEpoch!==undefined&&incoming.familyAdminEpoch!==undefined&&incoming.familyAdminEpoch!==db.familyAdminEpoch)throw Error('Inna wersja administracji rodziny. Wymagane bezpieczne przekazanie uprawnień.');
-if(same&&db.familyJoined&&incoming.familyPinVerifier&&!db.familyPinVerifier)db.familyPinVerifier=incoming.familyPinVerifier;
+if(same&&db.familyJoined&&incoming.familyPinVerifier&&!db.familyPinVerifier&&incoming.familyOwnerId===db.familyOwnerId)db.familyPinVerifier=incoming.familyPinVerifier;
 if(same&&db.familyOwnerId!==incoming.familyOwnerId)throw Error('Niezgodny administrator rodziny. Scalanie zostało zablokowane.');
 if(!same&&!(db.expenses.length===0&&db.members.length===1&&!db.familyJoined))throw Error('Plik należy do innej rodziny. Nie można scalać danych różnych rodzin.');
 if(!same){
