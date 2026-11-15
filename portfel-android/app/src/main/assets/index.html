@@ -112,7 +112,7 @@ const b64bytes=bytes=>btoa(String.fromCharCode(...new Uint8Array(bytes)));
 const fromB64=value=>Uint8Array.from(atob(value),c=>c.charCodeAt(0));
 const transferMessage=t=>JSON.stringify([t.familyId,t.from,t.to,t.epoch,t.verifier?.salt,t.verifier?.hash]);
 async function ensureSigningKey(){
- if(db.familyPublicKey)return;
+ if(db.familyPublicKey){const stored=JSON.parse(localStorage.getItem(ADMIN_KEY)||'null');if(!stored||stored.familyId!==db.familyId)throw Error('Brak prywatnego klucza administratora na tym urządzeniu.');return;}
  if(db.familyJoined||db.activeMemberId!==db.familyOwnerId)throw Error('Klucz rodziny może utworzyć tylko administrator.');
  if(!crypto.subtle)throw Error('Brak obsługi podpisów cyfrowych.');
  const pair=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);
@@ -155,7 +155,7 @@ if(same&&((incoming.familyAdminEpoch||0)!==(db.familyAdminEpoch||0)||incoming.fa
  else{db.familyJoined=true;localStorage.removeItem(PIN_KEY);}
  localStorage.removeItem(ADMIN_KEY);
 }
-if(same&&db.familyJoined&&incoming.familyPublicKey&&!db.familyPublicKey&&incoming.familyOwnerId===db.familyOwnerId)db.familyPublicKey=incoming.familyPublicKey;
+if(same&&db.familyJoined&&incoming.familyPublicKey&&!db.familyPublicKey&&incoming.familyOwnerId===db.familyOwnerId){if(!confirm('Zaufaj kluczowi podpisu administratora rodziny? Potwierdź jego pochodzenie poza aplikacją.'))throw Error('Nie zatwierdzono klucza rodziny.');db.familyPublicKey=incoming.familyPublicKey;}
 if(same&&db.familyJoined&&incoming.familyPinVerifier&&!db.familyPinVerifier&&incoming.familyOwnerId===db.familyOwnerId)db.familyPinVerifier=incoming.familyPinVerifier;
 if(!same&&!(db.expenses.length===0&&db.members.length===1&&!db.familyJoined))throw Error('Plik należy do innej rodziny. Nie można scalać danych różnych rodzin.');
 if(!same){
