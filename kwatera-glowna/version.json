@@ -1,0 +1,24 @@
+{
+  "version": "2.0.2",
+  "date": "2026-11-24",
+  "history": [
+    {
+      "version": "2.0.2",
+      "date": "2026-11-24",
+      "changes": [
+        "Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.",
+        "Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.",
+        "Powiadomienie o dostępnej wersji i historia zmian.",
+        "Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."
+      ]
+    },
+    {
+      "version": "2.0.1",
+      "date": "2026-11-24",
+      "changes": [
+        "Pierwsza publikacja PWA pod stałym adresem.",
+        "Manifest instalacyjny i podstawowa obsługa offline."
+      ]
+    }
+  ]
+}
