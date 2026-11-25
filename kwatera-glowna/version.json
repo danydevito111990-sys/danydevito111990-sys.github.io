@@ -1,7 +1,15 @@
 {
-  "version": "2.0.6",
+  "version": "2.0.7",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.7",
+      "date": "2026-11-25",
+      "changes": [
+        "Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.",
+        "Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."
+      ]
+    },
     {
       "version": "2.0.6",
       "date": "2026-11-25",
