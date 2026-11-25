@@ -1,7 +1,15 @@
 {
-  "version": "2.0.10",
+  "version": "2.0.11",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.11",
+      "date": "2026-11-25",
+      "changes": [
+        "Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.",
+        "Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."
+      ]
+    },
     {
       "version": "2.0.10",
       "date": "2026-11-25",
