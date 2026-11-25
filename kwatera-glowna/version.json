@@ -1,7 +1,15 @@
 {
-  "version": "2.0.15",
+  "version": "2.0.16",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.16",
+      "date": "2026-11-25",
+      "changes": [
+        "Po wskazaniu środka natychmiast pojawiają się proponowane okręgi pól 10, 9, 8 i 7.",
+        "Przesuwanie granic palcem i zatwierdzenie całego zestawu; propozycje nie wpływają na wynik przed zatwierdzeniem."
+      ]
+    },
     {
       "version": "2.0.15",
       "date": "2026-11-25",
