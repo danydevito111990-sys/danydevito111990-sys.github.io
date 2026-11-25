@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.15';
-const LOCAL_HISTORY=[{"version":"2.0.15","date":"2026-11-25","changes":["Odliczanie przed rozpoczęciem z krótkimi sygnałami i odliczanie pozostałego czasu PAR na ekranie.","Dłuższy sygnał końcowy (0,85 s); dźwięk nie jest już natychmiast zamykany przez timer."]},{"version":"2.0.14","date":"2026-11-25","changes":["Korekta zdjęcia tarczy: jasność i kontrast na podglądzie, z resetem i zachowaniem oryginału.","Czytelniejsze oznaczenia środka i pierścieni, podgląd zaznaczenia podczas przeciągania palcem, zatwierdzanie po puszczeniu.","Punktacja i automatyczne wykrywanie bez zmian."]},{"version":"2.0.13","date":"2026-11-25","changes":["Mocniejsze czyszczenie: dodatkowe usuwanie szarych resztek tła, jasnych obwódek i oderwanych plam.","Usunięcie ikony pustego kafelka z podglądu zdjęcia."]},{"version":"2.0.12","date":"2026-11-25","changes":["Obróbka zdjęć przeniesiona z magazynu do edycji pojedynczej karty, z podglądem kafelka sejfu.","Osobne ustawienia czyszczenia, ostrości i kontrastu zapisane w rekordzie karty; wspólny mechanizm podglądu i magazynu."]},{"version":"2.0.11","date":"2026-11-25","changes":["Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.","Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."]},{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.16';
+const LOCAL_HISTORY=[{"version":"2.0.16","date":"2026-11-25","changes":["Po wskazaniu środka natychmiast pojawiają się proponowane okręgi pól 10, 9, 8 i 7.","Przesuwanie granic palcem i zatwierdzenie całego zestawu; propozycje nie wpływają na wynik przed zatwierdzeniem."]},{"version":"2.0.15","date":"2026-11-25","changes":["Odliczanie przed rozpoczęciem z krótkimi sygnałami i odliczanie pozostałego czasu PAR na ekranie.","Dłuższy sygnał końcowy (0,85 s); dźwięk nie jest już natychmiast zamykany przez timer."]},{"version":"2.0.14","date":"2026-11-25","changes":["Korekta zdjęcia tarczy: jasność i kontrast na podglądzie, z resetem i zachowaniem oryginału.","Czytelniejsze oznaczenia środka i pierścieni, podgląd zaznaczenia podczas przeciągania palcem, zatwierdzanie po puszczeniu.","Punktacja i automatyczne wykrywanie bez zmian."]},{"version":"2.0.13","date":"2026-11-25","changes":["Mocniejsze czyszczenie: dodatkowe usuwanie szarych resztek tła, jasnych obwódek i oderwanych plam.","Usunięcie ikony pustego kafelka z podglądu zdjęcia."]},{"version":"2.0.12","date":"2026-11-25","changes":["Obróbka zdjęć przeniesiona z magazynu do edycji pojedynczej karty, z podglądem kafelka sejfu.","Osobne ustawienia czyszczenia, ostrości i kontrastu zapisane w rekordzie karty; wspólny mechanizm podglądu i magazynu."]},{"version":"2.0.11","date":"2026-11-25","changes":["Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.","Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."]},{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -480,9 +480,46 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 const defaults={brightness:0,contrast:0};
 function normalize(v){return {brightness:Math.max(-50,Math.min(50,Number(v?.brightness)||0)),contrast:Math.max(-40,Math.min(80,Number(v?.contrast)||0))};}
 let lastState=null,settings={...defaults},showGuides=true,calibrationPreview=null;
+
+// Suggested rings are only guides until the user confirms the calibration.
+function seedRings(existing,width,height,radius){
+ const known=Object.entries(existing||{}).map(([k,v])=>[Number(k),Number(v)]).filter(([k,v])=>Number.isInteger(k)&&k>=1&&k<=10&&Number.isFinite(v)&&v>0).sort((a,b)=>b[0]-a[0]);
+ const outer=Number(radius)>0?Math.min(Number(radius),Math.min(width,height)*.49):Math.min(width,height)*.44;
+ const map=Object.fromEntries(known);
+ for(const score of [10,9,8,7]){
+  if(map[score]>0)continue;
+  const inner=known.filter(([k])=>k>score).at(-1)||[11,0],outerKnown=known.find(([k])=>k<score);
+  let val=outerKnown?inner[1]+(outerKnown[1]-inner[1])*(inner[0]-score)/(inner[0]-outerKnown[0]):inner[1]+(outer/4)*(inner[0]-score);
+  if(!outerKnown&&inner[0]===11)val=outer*(11-score)/4;
+  map[score]=Math.max(.1,val);
+ }
+ return map;
+}
+function validRingRadius(map,score,r){
+ if(!Number.isFinite(r)||r<5)return false;
+ for(const [k,v] of Object.entries(map)){const n=Number(k),rr=Number(v);if(n===score||!Number.isFinite(rr)||rr<=0)continue;if((n>score&&r<=rr)||(n<score&&r>=rr))return false;}
+ return true;
+}
+let draftRings=null,lastPhoto=null;
+function visibleRings(){return draftRings||targetRingMap(targetState);}
+function updateRingConfirm(){
+ const b=document.getElementById('kgConfirmRings');
+ if(b){b.hidden=!draftRings;b.style.display=draftRings?'':'none';}
+ const guide=document.getElementById('kgRingDraftHelp');
+ if(guide){guide.hidden=!draftRings;guide.style.display=draftRings?'':'none';}
+}
+function confirmRings(){
+ if(!draftRings)return;
+ const entries=Object.entries(draftRings).map(([k,v])=>[Number(k),Number(v)]);
+ if(![10,9,8,7].every(n=>Number(draftRings[n])>=5)||entries.some(([n,v])=>!validRingRadius(draftRings,n,v))){targetFeedback('Popraw rozmiary okręgów przed zatwierdzeniem.');return;}
+ targetState.ringBoundaries={...draftRings};targetState.requiresCalibration=true;
+ targetState.radius=Math.max(...entries.map(([,v])=>v));
+ draftRings=null;targetSetMode('add');targetUpdateHits();updateRingConfirm();targetFeedback('Zatwierdzono granice okręgów. Możesz oznaczać trafienia.');
+}
+
 function syncState(){
  if(typeof targetState==='undefined'||!targetState)return;
- if(lastState!==targetState){lastState=targetState;settings=normalize(targetState.kgImageSettings);showGuides=true;calibrationPreview=null;}
+ if(lastState!==targetState||lastPhoto!==targetState.photo){lastState=targetState;lastPhoto=targetState.photo;settings=normalize(targetState.kgImageSettings);showGuides=true;calibrationPreview=null;draftRings=null;updateRingConfirm();}
 }
 function filterValue(v){const a=normalize(v);return 'brightness('+(100+a.brightness)+'%) contrast('+(100+a.contrast)+'%)';}
 function drawTarget(){
@@ -499,13 +536,14 @@ function drawTarget(){
  function label(str,x,y,color){ctx.save();ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';const tw=ctx.measureText(str).width+12;const xx=Math.max(tw/2,Math.min(cw-tw/2,x)),yy=Math.max(10,Math.min(ch-10,y));ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(xx-tw/2,yy-9,tw,18);ctx.fillStyle=color;ctx.fillText(str,xx,yy);ctx.restore();}
  const center=calibrationPreview?.mode==='center'?calibrationPreview.point:targetState.center;
  if(showGuides&&center){
-  const x=dx+center.x*scale,y=dy+center.y*scale,rings=Object.entries(targetRingMap(targetState)).filter(([_,r])=>Number(r)>0).sort((a,b)=>Number(b[1])-Number(a[1]));
+  const x=dx+center.x*scale,y=dy+center.y*scale,rings=Object.entries(visibleRings()).filter(([_,r])=>Number(r)>0).sort((a,b)=>Number(b[1])-Number(a[1]));
   const active=String(targetCalibrateScore);
   for(const [score,r] of rings){
-   const selected=score===active&&targetMode==='radius',color=selected?'#ffe34e':'#54e7dd';
+   const selected=score===active&&targetMode==='radius',color=selected?'#ffe34e':draftRings?'#e6ab63':'#54e7dd';
    if(selected&&calibrationPreview?.mode==='radius')continue;
    outlined(()=>ctx.arc(x,y,Number(r)*scale,0,Math.PI*2),color,selected?2.6:1.4,selected?[]:[6,4]);
    label(score+' pkt',x+Number(r)*scale*.707,y-Number(r)*scale*.707,color);
+   if(targetMode==='radius'){const hx=x+Number(r)*scale,hy=y;outlined(()=>ctx.arc(hx,hy,selected?6:4,0,Math.PI*2),color,2);}
   }
   if(!rings.length&&!targetState.requiresCalibration&&targetState.radius>0)outlined(()=>ctx.arc(x,y,targetState.radius*scale,0,Math.PI*2),'#54e7dd',1.5,[6,4]);
   if(calibrationPreview?.mode==='radius'){
@@ -524,7 +562,7 @@ function drawTarget(){
 function mountControls(){
  syncState();const canvas=document.getElementById('targetCanvas');if(!canvas)return;
  const workspace=canvas.closest('.target-workspace')||canvas.parentElement;
- if(workspace.previousElementSibling?.dataset.kgTargetAdjust==='1')return;
+ if(workspace.previousElementSibling?.dataset.kgTargetAdjust==='1'){updateRingConfirm();return;}
  const panel=document.createElement('section');panel.dataset.kgTargetAdjust='1';panel.style.cssText='background:#191711;border:1px solid #786344;border-radius:6px;padding:12px;margin:12px 0;display:grid;gap:10px;color:#eedfc6;';
  const title=document.createElement('strong');title.textContent='KOREKTA ZDJĘCIA TARCZY';
  const help=document.createElement('small');help.textContent='Dostosuj obraz przed ręcznym oznaczaniem. Oryginalne zdjęcie, automatyczne wykrywanie i sposób liczenia punktów nie zmieniają się.';
@@ -540,8 +578,10 @@ function mountControls(){
  function button(t,fn){const b=document.createElement('button');b.type='button';b.className='gun-button ghost';b.textContent=t;b.style.flex='1 1 auto';b.onclick=fn;buttons.append(b);return b;}
  button('RESET FILTRÓW',()=>{settings={...defaults};targetState.kgImageSettings={...settings};sync();drawTarget();});
  const guide=button('UKRYJ OKRĘGI',()=>{showGuides=!showGuides;guide.textContent=showGuides?'UKRYJ OKRĘGI':'POKAŻ OKRĘGI';drawTarget();});guide.textContent=showGuides?'UKRYJ OKRĘGI':'POKAŻ OKRĘGI';
- const instructions=document.createElement('small');instructions.textContent='Żółty: aktualnie zaznaczana granica. Turkusowy: zapisane granice. Przy kalibracji przeciągnij palcem i puść, aby zatwierdzić.';
- panel.prepend(title,help);panel.append(buttons,instructions);workspace.before(panel);sync();
+ const instructions=document.createElement('small');instructions.textContent='Żółty: wybrany okrąg. Turkusowy: zatwierdzony. Dotknij uchwytu z prawej strony lub wybierz wartość pierścienia, następnie przeciągnij granicę.';
+ const draftHelp=document.createElement('small');draftHelp.id='kgRingDraftHelp';draftHelp.textContent='Okręgi 10–7 są propozycją: dopasuj je do tarczy, następnie zatwierdź. Przed zatwierdzeniem propozycja nie jest używana do punktacji.';
+ const confirmButton=button('ZATWIERDŹ OKRĘGI 10–7',confirmRings);confirmButton.id='kgConfirmRings';
+ panel.prepend(title,help);panel.append(buttons,instructions,draftHelp);workspace.before(panel);sync();updateRingConfirm();
 }
 function boundedPoint(e){const p=targetToCanvasSpace(e),i=p&&targetToImage(p);if(!i||i.x<0||i.y<0||i.x>targetImage.naturalWidth||i.y>targetImage.naturalHeight)return null;return i;}
 function install(){
@@ -552,6 +592,7 @@ function install(){
   if(!targetImageReady()||!['center','radius'].includes(targetMode))return down.apply(this,arguments);
   if(calibrationPreview)return;
   const p=boundedPoint(e);if(!p)return;
+  if(targetMode==='radius'&&targetState.center){const t=targetCanvasTransform,rad=Math.hypot(p.x-targetState.center.x,p.y-targetState.center.y);const dist=(v)=>Math.abs(Number(v)-rad)*(t?.scale||1);const near=Object.entries(visibleRings()).filter(([k,v])=>Number(v)>0&&dist(v)<=14).sort((a,b)=>dist(a[1])-dist(b[1]))[0];if(near){targetCalibrateScore=Number(near[0]);}}
   document.getElementById('targetCanvas').setPointerCapture(e.pointerId);
   calibrationPreview={mode:targetMode,point:p,id:e.pointerId};showGuides=true;drawTarget();
  };
@@ -563,12 +604,13 @@ function install(){
   if(!calibrationPreview)return up.apply(this,arguments);
   if(calibrationPreview.id!==e.pointerId)return;
   const p=boundedPoint(e)||calibrationPreview.point,mode=calibrationPreview.mode;calibrationPreview=null;
-  if(mode==='center'){targetState.center={x:p.x,y:p.y};targetSetMode('radius');targetUpdateHits();return;}
+  if(mode==='center'){const old=targetRingMap(targetState);targetState.center={x:p.x,y:p.y};draftRings=seedRings(draftRings||old,targetImage.naturalWidth,targetImage.naturalHeight,targetState.radius);targetCalibrateScore=10;targetSetMode('radius');targetUpdateHits();updateRingConfirm();targetFeedback('Dopasuj okręgi 10, 9, 8 i 7, następnie zatwierdź.');return;}
   if(!targetState.center){drawTarget();return;}
-  const r=Math.hypot(p.x-targetState.center.x,p.y-targetState.center.y),score=targetCalibrateScore,map=targetRingMap(targetState);
+  const r=Math.hypot(p.x-targetState.center.x,p.y-targetState.center.y),score=Number(targetCalibrateScore),map=visibleRings();
   if(r<5){targetFeedback('Granica zbyt blisko środka tarczy.');drawTarget();return;}
   for(const [s,val] of Object.entries(map)){const v=Number(s),r0=Number(val);if(v===score)continue;if((v>score&&r<=r0)||(v<score&&r>=r0)){targetFeedback('Granica '+score+' pkt nie pasuje do '+v+' pkt. Wskaż ponownie.');drawTarget();return;}}
-  targetState.ringBoundaries={...map,[score]:r};targetState.requiresCalibration=true;targetState.radius=Math.max(targetState.radius||0,r);targetSetMode('add');targetUpdateHits();targetFeedback('Zapisano granicę '+score+' pkt. Wybierz następny pierścień.');
+  if(draftRings){draftRings={...map,[score]:r};targetUpdateHits();updateRingConfirm();targetFeedback('Dopasowano '+score+' pkt. Przeciągnij kolejny okrąg lub zatwierdź całość.');return;}
+  targetState.ringBoundaries={...map,[score]:r};targetState.requiresCalibration=true;targetState.radius=Math.max(...Object.values(targetState.ringBoundaries).map(Number));targetSetMode('add');targetUpdateHits();targetFeedback('Zapisano granicę '+score+' pkt. Wybierz następny pierścień.');
  };
  const init=window.targetInitUI;
  if(typeof init==='function')window.targetInitUI=function(){syncState();const result=init.apply(this,arguments);const canvas=document.getElementById('targetCanvas');if(canvas)canvas.addEventListener('pointercancel',()=>{calibrationPreview=null;drawTarget();});mountControls();return result;};
