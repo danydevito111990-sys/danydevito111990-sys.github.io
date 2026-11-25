@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.7';
-const LOCAL_HISTORY=[{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.8';
+const LOCAL_HISTORY=[{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -212,29 +212,38 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 
 ;(()=>{'use strict';
-let suspended=false, preserve=false, pickerUntil=0;
-function modalOpen(){return !!document.querySelector('dialog[open], #modal:not(.hidden), #ammoModal:not(.hidden)');}
+let suspended=false, blurredAt=0, pickerUntil=0, reloading=false;
+const isHome=()=>document.querySelector('#mobileNav .mobbtn.active')?.textContent?.includes('Pulpit')&&!!document.getElementById('homeGunCount');
 function returnHome(){
- if(location.hash===''||location.hash==='#home')return false;
- if(typeof window.render!=='function'){if(typeof window.go==='function')window.go('home');return false;}
- if(typeof gunScreen!=='undefined')gunScreen='cabinet';
- if(typeof gunId!=='undefined')gunId=null;
- if(typeof calFormOpen!=='undefined')calFormOpen=false;
- if(typeof calEditing!=='undefined')calEditing=null;
+ if(reloading)return;
+ const alreadyHome=(location.hash===''||location.hash==='#home')&&isHome();
+ if(alreadyHome){window.scrollTo(0,0);return;}
+ // A full navigation discards the previous in-memory view and any pending render.
+ // Only the URL fragment changes; IndexedDB and local storage are not touched.
+ reloading=true;
  history.replaceState(history.state,'',location.pathname+location.search+'#home');
- window.render();
- window.scrollTo({top:0,behavior:'instant'});
- return true;
+ location.reload();
+}
+function resume(){
+ if(document.visibilityState==='hidden'||reloading)return;
+ const wasAway=suspended||blurredAt>0&&Date.now()-blurredAt>=250;
+ if(!wasAway)return;
+ suspended=false;blurredAt=0;
+ if(Date.now()<pickerUntil)return;
+ returnHome();
 }
 function startHome(){
- returnHome();
- document.addEventListener('click',e=>{if(e.target?.closest?.('input[type=file]'))pickerUntil=Date.now()+120000;},true);
- for(const event of ['change','cancel'])document.addEventListener(event,e=>{if(e.target?.matches?.('input[type=file]'))pickerUntil=0;},true);
- document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'){suspended=true;preserve=modalOpen()||Date.now()<pickerUntil;return;}
-  if(document.visibilityState==='visible'&&suspended){suspended=false;const skip=preserve;preserve=false;pickerUntil=0;if(!skip&&!modalOpen())returnHome();}
- });
- window.addEventListener('pageshow',e=>{if(e.persisted&&!modalOpen()&&Date.now()>=pickerUntil)returnHome();});
+ // On a cold launch the existing main script already renders home for an empty hash.
+ if(location.hash&&location.hash!=='#home')returnHome();
+ document.addEventListener('click',e=>{if(e.target?.closest?.('input[type=file]'))pickerUntil=Date.now()+180000;},true);
+ for(const event of ['change','cancel'])document.addEventListener(event,e=>{if(e.target?.matches?.('input[type=file]')){suspended=false;blurredAt=0;pickerUntil=0;}},true);
+ document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){suspended=true;}else resume();});
+ window.addEventListener('blur',()=>{blurredAt=Date.now();});
+ window.addEventListener('focus',resume);
+ window.addEventListener('pagehide',()=>{suspended=true;});
+ window.addEventListener('pageshow',e=>{if(e.persisted){suspended=true;resume();}});
+ document.addEventListener('freeze',()=>{suspended=true;});
+ document.addEventListener('resume',()=>{suspended=true;resume();});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHome,{once:true});else startHome();
 })();
