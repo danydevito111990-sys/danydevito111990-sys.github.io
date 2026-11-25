@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.9';
-const LOCAL_HISTORY=[{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.10';
+const LOCAL_HISTORY=[{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -176,18 +176,62 @@ function paperResidue(d,w,h,aggressive=false){
  }
  return removed>0;
 }
+function hybridMask(d,w,h){
+ if(w<8||h<8)return false;
+ const n=w*h,base=new Uint8ClampedArray(d),proposal=new Uint8ClampedArray(d);
+ const gentle=gentleMask(base,w,h)||whiteMask(base,w,h);
+ const strong=strongMask(proposal,w,h);
+ const paper=new Uint8ClampedArray(base),residue=paperResidue(paper,w,h,true);
+ const candidate=new Uint8Array(n),seen=new Uint8Array(n),q=new Int32Array(n),lum=new Uint8Array(n),chroma=new Uint8Array(n);
+ let opaque=0,baseOpaque=0,removed=0;
+ for(let i=0;i<n;i++){
+  const k=i*4,r=d[k],g=d[k+1],b=d[k+2],lo=Math.min(r,g,b),hi=Math.max(r,g,b);
+  lum[i]=Math.round((r+g+b)/3);chroma[i]=hi-lo;
+  if(d[k+3]>32)opaque++;if(base[k+3]>32)baseOpaque++;
+  if(base[k+3]>32&&lo>=150&&hi-lo<=42&&((strong&&proposal[k+3]<32)||(residue&&paper[k+3]<32)))candidate[i]=1;
+ }
+ const keep=Math.max(25,n*.018,opaque*.025);
+ for(let i=0;i<n;i++){
+  if(seen[i]||!candidate[i])continue;
+  let head=0,tail=0,minx=w,miny=h,maxx=0,maxy=0,bright=0,sum=0,sum2=0,contacts=0,borders=0,texture=0,neutral=0;
+  function push(j){if(!seen[j]&&candidate[j]){seen[j]=1;q[tail++]=j}}
+  push(i);
+  while(head<tail){
+   const j=q[head++],x=j%w,y=(j/w)|0,v=lum[j];
+   minx=Math.min(x,minx);maxx=Math.max(x,maxx);miny=Math.min(y,miny);maxy=Math.max(y,maxy);
+   sum+=v;sum2+=v*v;if(v>=210)bright++;if(chroma[j]<=27)neutral++;
+   const border=x===0||y===0||x===w-1||y===h-1;let touches=border,rough=false;if(border)borders++;
+   function neighbor(k){if(base[k*4+3]<32)touches=true;else if(candidate[k]&&Math.abs(lum[k]-v)>28)rough=true;push(k)}
+   if(x>0)neighbor(j-1);if(x<w-1)neighbor(j+1);if(y>0)neighbor(j-w);if(y<h-1)neighbor(j+w);
+   if(touches)contacts++;if(rough)texture++;
+  }
+  const ww=maxx-minx+1,hh=maxy-miny+1,mean=sum/tail,variance=Math.max(0,sum2/tail-mean*mean),density=tail/(ww*hh);
+  const external=contacts>=Math.max(3,Math.sqrt(tail)*.12);
+  const flat=variance<=750&&texture/tail<.20&&neutral/tail>=.65;
+  const broad=tail>=Math.max(12,n*.00008)&&Math.min(ww,hh)>=3&&density>=.24;
+  const palePaper=external&&flat&&broad&&(bright/tail>=.30||mean>=205);
+  const edgeGradient=borders>=Math.max(8,Math.sqrt(tail)*.35)&&flat&&broad&&tail>=n*.015&&mean>=178;
+  const enclosedPaper=!external&&flat&&tail>=Math.max(25,n*.0003)&&Math.min(ww,hh)>=5&&density>.45&&mean>=232&&bright/tail>.92;
+  if((palePaper||edgeGradient||enclosedPaper)&&baseOpaque-removed-tail>=keep){for(let j=0;j<tail;j++)base[q[j]*4+3]=0;removed+=tail;}
+ }
+ const islands=new Uint8Array(n);
+ for(let i=0;i<n;i++){
+  if(islands[i]||base[i*4+3]<32)continue;
+  let head=0,tail=0,light=0,sum=0;
+  function add(j){if(!islands[j]&&base[j*4+3]>=32){islands[j]=1;q[tail++]=j}}
+  add(i);while(head<tail){const j=q[head++],x=j%w,y=(j/w)|0;sum+=lum[j];if(lum[j]>=190&&chroma[j]<30)light++;if(x>0)add(j-1);if(x<w-1)add(j+1);if(y>0)add(j-w);if(y<h-1)add(j+w)}
+  if(tail<=Math.max(8,n*.002)&&light/tail>=.96&&sum/tail>=205&&baseOpaque-removed-tail>keep){for(let k=0;k<tail;k++)base[q[k]*4+3]=0;removed+=tail;}
+ }
+ if(!gentle&&!removed)return false;
+ d.set(base);return true;
+}
 function maskBackground(d,w,h,mode){
  if(mode==='original')return false;
- const n=w*h;let pale=0,edges=0,trans=0;
- for(let i=0;i<n;i++){if(d[i*4+3]<32)trans++;const x=i%w,y=(i/w)|0;if(x!==0&&x!==w-1&&y!==0&&y!==h-1)continue;edges++;const k=i*4,lo=Math.min(d[k],d[k+1],d[k+2]),hi=Math.max(d[k],d[k+1],d[k+2]);if(d[k+3]<32||(lo>=145&&hi-lo<45))pale++;}
- let changed=false;
  if(mode==='gentle')return gentleMask(d,w,h)||whiteMask(d,w,h);
- if(mode==='strong'||pale/edges>.55)changed=strongMask(d,w,h);
- if(!changed)changed=gentleMask(d,w,h)||whiteMask(d,w,h);
- if(changed||trans/n>.08||pale/edges>.55)changed=paperResidue(d,w,h,mode==='strong')||changed;
- return changed;
+ if(mode==='strong'){const changed=strongMask(d,w,h)||gentleMask(d,w,h)||whiteMask(d,w,h);return paperResidue(d,w,h,true)||changed;}
+ return hybridMask(d,w,h);
 }
-const modeLabels={auto:'Automatyczne · adaptacyjne',gentle:'Delikatne',strong:'Mocniejsze',original:'Oryginał'};
+const modeLabels={auto:'Automatyczne · hybrydowe',gentle:'Delikatne',strong:'Mocniejsze',original:'Oryginał'};
 function getMode(){try{const m=localStorage.getItem('kg-photo-filter-mode');return Object.hasOwn(modeLabels,m)?m:'auto';}catch{return 'auto';}}
 let photoMode=getMode();
 
@@ -196,8 +240,8 @@ function cleanCabinet(){
  const grid=document.querySelector('.cabinet-grid');if(!grid)return;
  let toolbar=grid.parentElement.querySelector('[data-kg-photo-version]');
  if(!toolbar){
-  toolbar=document.createElement('div');toolbar.dataset.kgPhotoVersion='2.0.9';toolbar.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;color:#ddd1b7;font-size:11px;flex-wrap:wrap;';
-  const label=document.createElement('span');label.textContent='Filtr zdjęć 2.0.9';
+  toolbar=document.createElement('div');toolbar.dataset.kgPhotoVersion='2.0.10';toolbar.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;color:#ddd1b7;font-size:11px;flex-wrap:wrap;';
+  const label=document.createElement('span');label.textContent='Filtr zdjęć 2.0.10';
   const select=document.createElement('select');select.setAttribute('aria-label','Siła czyszczenia zdjęć');select.style.cssText='max-width:100%;font:inherit;background:#191b19;color:#e7decd;border:1px solid #655d4c;border-radius:5px;padding:5px;';
   for(const [v,t] of Object.entries(modeLabels)){const option=document.createElement('option');option.value=v;option.textContent=t;select.append(option);}select.value=photoMode;
   select.onchange=()=>{photoMode=select.value;try{localStorage.setItem('kg-photo-filter-mode',photoMode)}catch{}cleanCabinet();};
@@ -209,9 +253,9 @@ function cleanCabinet(){
   img.dataset.cleanStarted='1';
   const click=tile.getAttribute('onclick')||'';const id=click.match(/showWeapon\(['"]([^'"]+)['"]\)/)?.[1];const record=id?records.find(w=>String(w.id)===id):null;
   if(!img._kgOriginal)img._kgOriginal=(record&&record.photo)||img.getAttribute('src');
-  const src=img._kgOriginal;if(!src||img.dataset.kgCleanV9===photoMode)return;
-  const mode=photoMode;img.dataset.kgCleanV9=mode;
-  function apply(result){if(!img.isConnected||img.dataset.kgCleanV9!==mode)return;img.src=result||src;img.classList.toggle('photo-cleaned',!!result||/^data:image\/png/i.test(src));img.dataset.kgPhotoResult=result?'cleaned':'original';}
+  const src=img._kgOriginal;if(!src||img.dataset.kgCleanV10===photoMode)return;
+  const mode=photoMode;img.dataset.kgCleanV10=mode;
+  function apply(result){if(!img.isConnected||img.dataset.kgCleanV10!==mode)return;img.src=result||src;img.classList.toggle('photo-cleaned',!!result||/^data:image\/png/i.test(src));img.dataset.kgPhotoResult=result?'cleaned':'original';}
   if(mode==='original'){apply(null);return;}
   const key=mode+'|'+src;if(cache.has(key)){apply(cache.get(key));return;}
   const source=new Image();
