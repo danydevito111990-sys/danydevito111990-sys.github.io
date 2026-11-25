@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.4';
-const LOCAL_HISTORY=[{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.5';
+const LOCAL_HISTORY=[{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -72,42 +72,37 @@ function installBackup(){if(typeof window.downloadText==='function'){const old=w
 function maskBackground(d,w,h){
  const n=w*h;if(w<8||h<8)return false;
  const edge=[];for(let x=0;x<w;x++){edge.push(x,(h-1)*w+x)}for(let y=1;y<h-1;y++){edge.push(y*w,y*w+w-1)}
- const bins=new Map();let transparent=0;
- for(const i of edge){const k=i*4;if(d[k+3]<32){transparent++;continue}const key=[d[k]>>5,d[k+1]>>5,d[k+2]>>5].join(',');let b=bins.get(key);if(!b){b=[0,0,0,0];bins.set(key,b)}b[0]++;b[1]+=d[k];b[2]+=d[k+1];b[3]+=d[k+2]}
- let best=null;for(const b of bins.values())if(!best||b[0]>best[0])best=b;
- const neutralWhite= i=>{const k=i*4;return Math.min(d[k],d[k+1],d[k+2])>=225&&Math.max(d[k],d[k+1],d[k+2])-Math.min(d[k],d[k+1],d[k+2])<=30};
- const whiteShare=edge.filter(neutralWhite).length/edge.length;
- const already=transparent/edge.length>.55;
- if(!best&&!already)return false;
- const rgb=whiteShare>.28||already?[250,250,250]:best.slice(1).map(v=>v/best[0]);
- const pale=Math.min(...rgb)>180&&Math.max(...rgb)-Math.min(...rgb)<38;
- const diff=i=>{let k=i*4;return Math.max(Math.abs(d[k]-rgb[0]),Math.abs(d[k+1]-rgb[1]),Math.abs(d[k+2]-rgb[2]))};
- const close=i=>d[i*4+3]<32||diff(i)<=(pale?45:30)||(pale&&neutralWhite(i));
- const share=edge.filter(close).length/edge.length;if(share<.34&&!already)return false;
+ const lum=new Float32Array(n),sat=new Uint8Array(n);for(let i=0;i<n;i++){const k=i*4;lum[i]=(d[k]+d[k+1]+d[k+2])/3;sat[i]=Math.max(d[k],d[k+1],d[k+2])-Math.min(d[k],d[k+1],d[k+2]);}
+ const bins=new Map();let trans=0;for(const i of edge){const k=i*4;if(d[k+3]<32){trans++;continue}const key=[d[k]>>5,d[k+1]>>5,d[k+2]>>5].join(',');const b=bins.get(key)||[0,0,0,0];b[0]++;b[1]+=d[k];b[2]+=d[k+1];b[3]+=d[k+2];bins.set(key,b);}
+ let best=null;for(const b of bins.values())if(!best||b[0]>best[0])best=b;if(!best)return false;
+ const rgb=best.slice(1).map(x=>x/best[0]);
+ const lightEdge=edge.filter(i=>d[i*4+3]<32||lum[i]>=155&&sat[i]<38).length/edge.length;
+ const pale=lightEdge>.55||trans/edge.length>.55;
+ const dif=i=>{let k=i*4;return Math.max(Math.abs(d[k]-rgb[0]),Math.abs(d[k+1]-rgb[1]),Math.abs(d[k+2]-rgb[2]))};
+ const near=i=>d[i*4+3]<32|| (pale?lum[i]>=150&&sat[i]<=44:dif(i)<=34);
  const seen=new Uint8Array(n),q=new Int32Array(n);let head=0,tail=0;
- const push=i=>{if(!seen[i]&&close(i)){seen[i]=1;q[tail++]=i}};
- const walk=fn=>{while(head<tail){const i=q[head++],x=i%w,y=(i/w)|0;fn(i);if(x>0)push(i-1);if(x<w-1)push(i+1);if(y>0)push(i-w);if(y<h-1)push(i+w)}};
- for(const i of edge)push(i);
- walk(()=>{});const exterior=tail;
- if(exterior<n*.025&&!already||exterior>n*.975)return false;
- // Remove enclosed, substantially uniform light patches (not small highlights).
- if(pale){
- for(let i=0;i<n;i++){if(seen[i]||d[i*4+3]<32||!close(i))continue;const start=tail;push(i);let whites=0,minx=w,maxx=0,miny=h,maxy=0;walk(j=>{const x=j%w,y=(j/w)|0;minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y);if(neutralWhite(j)||diff(j)<20)whites++});const count=tail-start;
- if(count<Math.max(18,n*.00012)||whites/count<.70||maxx-minx<3||maxy-miny<3){for(let j=start;j<tail;j++)seen[q[j]]=2;} }
- }
- let removed=0,opaque=0;for(let i=0;i<n;i++){if(d[i*4+3]>32){opaque++;if(seen[i]===1)removed++}}
+ function push(i,from=-1){if(seen[i]||!near(i))return;if(from>=0&&d[i*4+3]>=32&&d[from*4+3]>=32&&Math.abs(lum[i]-lum[from])>40&&lum[i]<220)return;seen[i]=1;q[tail++]=i}
+ function walk(fn){while(head<tail){const i=q[head++],x=i%w,y=(i/w)|0;fn(i);if(x>0)push(i-1,i);if(x<w-1)push(i+1,i);if(y>0)push(i-w,i);if(y<h-1)push(i+w,i);}}
+ if(edge.filter(near).length/edge.length<.45)return false;
+ for(const i of edge)push(i);walk(()=>{});
+ if(tail<n*.025||tail>n*.985)return false;
+ // Enclosed bright neutral areas are background only when sufficiently large and flat.
+ if(pale)for(let i=0;i<n;i++){if(seen[i]||d[i*4+3]<32||lum[i]<205||sat[i]>26)continue;const start=tail;push(i);let sum=0,sum2=0,minx=w,maxx=0,miny=h,maxy=0;walk(j=>{const x=j%w,y=(j/w)|0;sum+=lum[j];sum2+=lum[j]*lum[j];minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y)});const count=tail-start;if(!count)continue;const mean=sum/count,variance=sum2/count-mean*mean;if(count<Math.max(24,n*.0002)||mean<218||variance>420||maxx-minx<4||maxy-miny<4)for(let j=start;j<tail;j++)seen[q[j]]=2;}
+ let opaque=0,removed=0;for(let i=0;i<n;i++){if(d[i*4+3]>32){opaque++;if(seen[i]===1)removed++}}
  if(removed<Math.max(5,opaque*.003)||opaque-removed<n*.012)return false;
- for(let i=0;i<n;i++){if(seen[i]===1)d[i*4+3]=0;}
- // Soften bright fringe adjacent to the newly transparent region.
- if(pale)for(let i=0;i<n;i++){if(seen[i]===1||d[i*4+3]===0)continue;let x=i%w,y=(i/w)|0;if(!((x>0&&seen[i-1]===1)||(x<w-1&&seen[i+1]===1)||(y>0&&seen[i-w]===1)||(y<h-1&&seen[i+w]===1)))continue;let k=i*4;const distance=diff(i);if(Math.min(d[k],d[k+1],d[k+2])>170&&distance<85)d[k+3]=Math.min(d[k+3],Math.round(255*Math.max(0,Math.min(1,(distance-35)/50))))}
+ // Remove small disconnected, pale remnants, not dark or saturated foreground components.
+ const visited=new Uint8Array(n),comp=new Int32Array(n);
+ if(pale)for(let i=0;i<n;i++){if(visited[i]||seen[i]===1||d[i*4+3]<32)continue;let h0=0,t=0,bright=0;function add(j){if(!visited[j]&&seen[j]!==1&&d[j*4+3]>=32){visited[j]=1;comp[t++]=j;}}add(i);while(h0<t){const j=comp[h0++],x=j%w,y=(j/w)|0;if(lum[j]>155&&sat[j]<45)bright++;if(x>0)add(j-1);if(x<w-1)add(j+1);if(y>0)add(j-w);if(y<h-1)add(j+w);}if(t<n*.015&&bright/t>.85)for(let j=0;j<t;j++)seen[comp[j]]=1;}
+ for(let i=0;i<n;i++)if(seen[i]===1)d[i*4+3]=0;
+ if(pale)for(let i=0;i<n;i++){if(seen[i]===1||d[i*4+3]===0||lum[i]<160||sat[i]>45)continue;const x=i%w,y=(i/w)|0;if((x>0&&seen[i-1]===1)||(x<w-1&&seen[i+1]===1)||(y>0&&seen[i-w]===1)||(y<h-1&&seen[i+w]===1))d[i*4+3]=Math.min(d[i*4+3],Math.round(255*Math.max(0,Math.min(1,(220-lum[i])/60))));}
  return true;
 }
 const cache=new Map();
 function cleanCabinet(){
  const grid=document.querySelector('.cabinet-grid');
- if(grid&&!grid.parentElement.querySelector('[data-kg-photo-version]')){const tag=document.createElement('div');tag.dataset.kgPhotoVersion='2.0.4';tag.textContent='Zdjęcia · filtr tła 2.0.4';tag.style.cssText='text-align:right;color:#aaa18e;font-size:10px;padding:3px 12px;';grid.before(tag);}
+ if(grid&&!grid.parentElement.querySelector('[data-kg-photo-version]')){const tag=document.createElement('div');tag.dataset.kgPhotoVersion='2.0.5';tag.textContent='Zdjęcia · filtr tła 2.0.5';tag.style.cssText='text-align:right;color:#aaa18e;font-size:10px;padding:3px 12px;';grid.before(tag);}
  document.querySelectorAll('.cabinet-grid img[data-clean-cabinet]').forEach(img=>{
-  if(img.dataset.kgCleanV4)return;img.dataset.kgCleanV4='1';img.dataset.cleanStarted='1';
+  if(img.dataset.kgCleanV5)return;img.dataset.kgCleanV5='1';img.dataset.cleanStarted='1';
   const src=img.getAttribute('src');if(!src)return;
   function apply(cleaned){if(!img.isConnected)return;if(cleaned){img.src=cleaned;img.classList.add('photo-cleaned');img.dataset.kgPhotoResult='cleaned';}else{img.dataset.kgPhotoResult='original';}}
   if(cache.has(src)){apply(cache.get(src));return;}
