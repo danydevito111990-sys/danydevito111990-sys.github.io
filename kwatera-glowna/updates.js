@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.8';
-const LOCAL_HISTORY=[{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.9';
+const LOCAL_HISTORY=[{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -145,12 +145,49 @@ function whiteMask(d,w,h){
  for(let i=0;i<n;i++)if(seen[i])d[i*4+3]=0;
  return true;
 }
+// Clean large pale paper remnants connected to transparent space or image borders.
+// Only changes a display copy, never a stored photo.
+function paperResidue(d,w,h,aggressive=false){
+ const n=w*h,seen=new Uint8Array(n),q=new Int32Array(n);
+ const light=new Uint8Array(n),alpha=new Uint8Array(n),lum=new Uint8Array(n);
+ let transparent=0,opaque=0;
+ for(let i=0;i<n;i++){const k=i*4,r=d[k],g=d[k+1],b=d[k+2],lo=Math.min(r,g,b),hi=Math.max(r,g,b);alpha[i]=d[k+3];lum[i]=Math.round((r+g+b)/3);if(alpha[i]<32)transparent++;else opaque++;
+ light[i]=alpha[i]>=32&&lo>=(aggressive?155:175)&&hi-lo<=(aggressive?44:32)?1:0;}
+ let removed=0;
+ for(let i=0;i<n;i++){
+  if(seen[i]||!light[i])continue;
+  let head=0,tail=0,touches=0,white=0,sum=0,minx=w,maxx=0,miny=h,maxy=0;
+  function push(j){if(!seen[j]&&light[j]){seen[j]=1;q[tail++]=j;}}
+  push(i);
+  while(head<tail){
+   const j=q[head++],x=j%w,y=(j/w)|0;sum+=lum[j];if(lum[j]>=215)white++;
+   minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y);
+   let border=x===0||x===w-1||y===0||y===h-1;
+   if(x>0){if(alpha[j-1]<32)border=true;push(j-1)}
+   if(x<w-1){if(alpha[j+1]<32)border=true;push(j+1)}
+   if(y>0){if(alpha[j-w]<32)border=true;push(j-w)}
+   if(y<h-1){if(alpha[j+w]<32)border=true;push(j+w)}
+   if(border)touches++;
+  }
+  const box=(maxx-minx+1)*(maxy-miny+1),mean=sum/tail;
+  const broad=tail>=Math.max(50,n*.005)&&maxx-minx>=w*.10&&maxy-miny>=h*.035;
+  const paper=broad&&touches>=Math.max(4,Math.sqrt(tail)*.12)&&(white/tail>.26||mean>=210)&&tail/box>.27;
+  if(paper&&opaque-removed-tail>n*.025){for(let k=0;k<tail;k++)d[q[k]*4+3]=0;removed+=tail;}
+ }
+ return removed>0;
+}
 function maskBackground(d,w,h,mode){
  if(mode==='original')return false;
- if(mode==='strong')return strongMask(d,w,h)||gentleMask(d,w,h)||whiteMask(d,w,h);
- return gentleMask(d,w,h)||whiteMask(d,w,h);
+ const n=w*h;let pale=0,edges=0,trans=0;
+ for(let i=0;i<n;i++){if(d[i*4+3]<32)trans++;const x=i%w,y=(i/w)|0;if(x!==0&&x!==w-1&&y!==0&&y!==h-1)continue;edges++;const k=i*4,lo=Math.min(d[k],d[k+1],d[k+2]),hi=Math.max(d[k],d[k+1],d[k+2]);if(d[k+3]<32||(lo>=145&&hi-lo<45))pale++;}
+ let changed=false;
+ if(mode==='gentle')return gentleMask(d,w,h)||whiteMask(d,w,h);
+ if(mode==='strong'||pale/edges>.55)changed=strongMask(d,w,h);
+ if(!changed)changed=gentleMask(d,w,h)||whiteMask(d,w,h);
+ if(changed||trans/n>.08||pale/edges>.55)changed=paperResidue(d,w,h,mode==='strong')||changed;
+ return changed;
 }
-const modeLabels={auto:'Automatyczne · delikatne',strong:'Mocniejsze',original:'Oryginał'};
+const modeLabels={auto:'Automatyczne · adaptacyjne',gentle:'Delikatne',strong:'Mocniejsze',original:'Oryginał'};
 function getMode(){try{const m=localStorage.getItem('kg-photo-filter-mode');return Object.hasOwn(modeLabels,m)?m:'auto';}catch{return 'auto';}}
 let photoMode=getMode();
 
@@ -159,8 +196,8 @@ function cleanCabinet(){
  const grid=document.querySelector('.cabinet-grid');if(!grid)return;
  let toolbar=grid.parentElement.querySelector('[data-kg-photo-version]');
  if(!toolbar){
-  toolbar=document.createElement('div');toolbar.dataset.kgPhotoVersion='2.0.7';toolbar.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;color:#ddd1b7;font-size:11px;flex-wrap:wrap;';
-  const label=document.createElement('span');label.textContent='Filtr zdjęć 2.0.7';
+  toolbar=document.createElement('div');toolbar.dataset.kgPhotoVersion='2.0.9';toolbar.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;color:#ddd1b7;font-size:11px;flex-wrap:wrap;';
+  const label=document.createElement('span');label.textContent='Filtr zdjęć 2.0.9';
   const select=document.createElement('select');select.setAttribute('aria-label','Siła czyszczenia zdjęć');select.style.cssText='max-width:100%;font:inherit;background:#191b19;color:#e7decd;border:1px solid #655d4c;border-radius:5px;padding:5px;';
   for(const [v,t] of Object.entries(modeLabels)){const option=document.createElement('option');option.value=v;option.textContent=t;select.append(option);}select.value=photoMode;
   select.onchange=()=>{photoMode=select.value;try{localStorage.setItem('kg-photo-filter-mode',photoMode)}catch{}cleanCabinet();};
@@ -170,11 +207,11 @@ function cleanCabinet(){
  grid.querySelectorAll('.weapon-tile').forEach((tile,index)=>{
   const img=tile.querySelector('img[data-clean-cabinet]');if(!img)return;
   img.dataset.cleanStarted='1';
-  const record=records[index];
+  const click=tile.getAttribute('onclick')||'';const id=click.match(/showWeapon\(['"]([^'"]+)['"]\)/)?.[1];const record=id?records.find(w=>String(w.id)===id):null;
   if(!img._kgOriginal)img._kgOriginal=(record&&record.photo)||img.getAttribute('src');
-  const src=img._kgOriginal;if(!src||img.dataset.kgCleanV7===photoMode)return;
-  const mode=photoMode;img.dataset.kgCleanV7=mode;
-  function apply(result){if(!img.isConnected||img.dataset.kgCleanV7!==mode)return;img.src=result||src;img.classList.toggle('photo-cleaned',!!result||/^data:image\/png/i.test(src));img.dataset.kgPhotoResult=result?'cleaned':'original';}
+  const src=img._kgOriginal;if(!src||img.dataset.kgCleanV9===photoMode)return;
+  const mode=photoMode;img.dataset.kgCleanV9=mode;
+  function apply(result){if(!img.isConnected||img.dataset.kgCleanV9!==mode)return;img.src=result||src;img.classList.toggle('photo-cleaned',!!result||/^data:image\/png/i.test(src));img.dataset.kgPhotoResult=result?'cleaned':'original';}
   if(mode==='original'){apply(null);return;}
   const key=mode+'|'+src;if(cache.has(key)){apply(cache.get(key));return;}
   const source=new Image();
@@ -182,9 +219,8 @@ function cleanCabinet(){
    const c=document.createElement('canvas'),scale=Math.min(1,1100/Math.max(source.naturalWidth,source.naturalHeight));
    c.width=Math.max(1,Math.round(source.naturalWidth*scale));c.height=Math.max(1,Math.round(source.naturalHeight*scale));
    const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0,c.width,c.height);const frame=ctx.getImageData(0,0,c.width,c.height);
-   let result=null;let transparent=0;for(let k=3;k<frame.data.length;k+=4)if(frame.data[k]<24)transparent++;
-   // Keep an existing transparent cutout in gentle mode; avoid destroying light foreground parts.
-   if(!(mode==='auto'&&transparent>c.width*c.height*.12)&&maskBackground(frame.data,c.width,c.height,mode)){ctx.putImageData(frame,0,0);result=c.toDataURL('image/png');}
+   let result=null;
+   if(maskBackground(frame.data,c.width,c.height,mode)){ctx.putImageData(frame,0,0);result=c.toDataURL('image/png');}
    if(cache.size>=36)cache.clear();cache.set(key,result);apply(result);
   }catch{apply(null);}};
   source.onerror=()=>apply(null);source.src=src;
