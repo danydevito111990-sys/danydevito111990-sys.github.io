@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.14';
-const LOCAL_HISTORY=[{"version":"2.0.14","date":"2026-11-25","changes":["Korekta zdjęcia tarczy: jasność i kontrast na podglądzie, z resetem i zachowaniem oryginału.","Czytelniejsze oznaczenia środka i pierścieni, podgląd zaznaczenia podczas przeciągania palcem, zatwierdzanie po puszczeniu.","Punktacja i automatyczne wykrywanie bez zmian."]},{"version":"2.0.13","date":"2026-11-25","changes":["Mocniejsze czyszczenie: dodatkowe usuwanie szarych resztek tła, jasnych obwódek i oderwanych plam.","Usunięcie ikony pustego kafelka z podglądu zdjęcia."]},{"version":"2.0.12","date":"2026-11-25","changes":["Obróbka zdjęć przeniesiona z magazynu do edycji pojedynczej karty, z podglądem kafelka sejfu.","Osobne ustawienia czyszczenia, ostrości i kontrastu zapisane w rekordzie karty; wspólny mechanizm podglądu i magazynu."]},{"version":"2.0.11","date":"2026-11-25","changes":["Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.","Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."]},{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.15';
+const LOCAL_HISTORY=[{"version":"2.0.15","date":"2026-11-25","changes":["Odliczanie przed rozpoczęciem z krótkimi sygnałami i odliczanie pozostałego czasu PAR na ekranie.","Dłuższy sygnał końcowy (0,85 s); dźwięk nie jest już natychmiast zamykany przez timer."]},{"version":"2.0.14","date":"2026-11-25","changes":["Korekta zdjęcia tarczy: jasność i kontrast na podglądzie, z resetem i zachowaniem oryginału.","Czytelniejsze oznaczenia środka i pierścieni, podgląd zaznaczenia podczas przeciągania palcem, zatwierdzanie po puszczeniu.","Punktacja i automatyczne wykrywanie bez zmian."]},{"version":"2.0.13","date":"2026-11-25","changes":["Mocniejsze czyszczenie: dodatkowe usuwanie szarych resztek tła, jasnych obwódek i oderwanych plam.","Usunięcie ikony pustego kafelka z podglądu zdjęcia."]},{"version":"2.0.12","date":"2026-11-25","changes":["Obróbka zdjęć przeniesiona z magazynu do edycji pojedynczej karty, z podglądem kafelka sejfu.","Osobne ustawienia czyszczenia, ostrości i kontrastu zapisane w rekordzie karty; wspólny mechanizm podglądu i magazynu."]},{"version":"2.0.11","date":"2026-11-25","changes":["Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.","Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."]},{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -577,4 +577,52 @@ function install(){
  const view=document.getElementById('view');if(view)new MutationObserver(mountControls).observe(view,{childList:true,subtree:true});mountControls();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
+
+;(()=>{'use strict';
+let armingDeadline=0,lastNumber=null,endingContext=null;
+function remaining(deadline,now){return Math.max(0,(deadline-now)/1000);}
+function sound(ctx,duration,frequency,volume){
+ if(!ctx)return;
+ try{const t=ctx.currentTime+.01,o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.frequency.value=frequency;
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(volume,t+.006);
+ g.gain.setValueAtTime(volume,t+Math.max(.008,duration-.025));g.gain.exponentialRampToValueAtTime(.0001,t+duration);
+ o.connect(g).connect(ctx.destination);o.start(t);o.stop(t+duration+.015);}catch{}
+}
+function installCountdown(){
+ if(typeof window.timerRefreshUI!=='function'||typeof window.timerTone!=='function'||typeof window.timerReleaseAudio!=='function')return;
+ const oldRefresh=window.timerRefreshUI,oldTone=window.timerTone,oldRelease=window.timerReleaseAudio;
+ window.timerTone=function(type='start'){
+  if(type==='stop'&&timerAudio){endingContext=timerAudio;sound(timerAudio,.85,740,.17);return;}
+  return oldTone.apply(this,arguments);
+ };
+ window.timerReleaseAudio=function(){
+  const ctx=timerAudio;
+  if(ctx&&ctx===endingContext){timerAudio=null;endingContext=null;try{return oldRelease.apply(this,arguments);}finally{setTimeout(()=>{try{ctx.close().catch(()=>{});}catch{}},950);}}
+  return oldRelease.apply(this,arguments);
+ };
+ window.timerRefreshUI=function(){
+  const result=oldRefresh.apply(this,arguments);
+  const digits=document.getElementById('timerDigits'),label=digits?.parentElement?.querySelector('.timer-display-label');
+  if(!digits){armingDeadline=0;lastNumber=null;return result;}
+  const now=performance.now();
+  if(timerState==='arming'){
+   if(!armingDeadline){const match=String(timerNotice).match(/BEEP za\s+([\d.,]+)/i);const sec=Number(match?.[1]?.replace(',','.'))||1;armingDeadline=now+sec*1000;lastNumber=null;}
+   const left=remaining(armingDeadline,now),number=Math.ceil(left);
+   if(number>0&&number!==lastNumber){lastNumber=number;if(left>.16)sound(timerAudio,.075,740,.12);}
+   if(label)label.textContent='ODLICZANIE DO STARTU';
+   digits.innerHTML=String(number)+'<span>s</span>';
+  }else{
+   armingDeadline=0;lastNumber=null;
+   if(timerState==='running'&&Number(timerCfg.par)>0){
+    const left=remaining(timerStartAt+Number(timerCfg.par)*1000,now);
+    if(label)label.textContent='POZOSTAŁY CZAS';
+    digits.innerHTML=timerTime(left)+'<span>s</span>';
+   }else if(label)label.textContent='CZAS OD SYGNAŁU';
+  }
+  return result;
+ };
+ window.timerRefreshUI();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installCountdown,{once:true});else installCountdown();
 })();
