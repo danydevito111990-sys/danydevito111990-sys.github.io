@@ -1,7 +1,16 @@
 {
-  "version": "2.0.13",
+  "version": "2.0.14",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.14",
+      "date": "2026-11-25",
+      "changes": [
+        "Korekta zdjęcia tarczy: jasność i kontrast na podglądzie, z resetem i zachowaniem oryginału.",
+        "Czytelniejsze oznaczenia środka i pierścieni, podgląd zaznaczenia podczas przeciągania palcem, zatwierdzanie po puszczeniu.",
+        "Punktacja i automatyczne wykrywanie bez zmian."
+      ]
+    },
     {
       "version": "2.0.13",
       "date": "2026-11-25",
