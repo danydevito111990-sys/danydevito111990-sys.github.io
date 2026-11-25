@@ -1,7 +1,15 @@
 {
-  "version": "2.0.7",
+  "version": "2.0.8",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.8",
+      "date": "2026-11-25",
+      "changes": [
+        "Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.",
+        "Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."
+      ]
+    },
     {
       "version": "2.0.7",
       "date": "2026-11-25",
