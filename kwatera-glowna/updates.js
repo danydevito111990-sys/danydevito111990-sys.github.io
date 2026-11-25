@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.13';
-const LOCAL_HISTORY=[{"version":"2.0.13","date":"2026-11-25","changes":["Mocniejsze czyszczenie: dodatkowe usuwanie szarych resztek tła, jasnych obwódek i oderwanych plam.","Usunięcie ikony pustego kafelka z podglądu zdjęcia."]},{"version":"2.0.12","date":"2026-11-25","changes":["Obróbka zdjęć przeniesiona z magazynu do edycji pojedynczej karty, z podglądem kafelka sejfu.","Osobne ustawienia czyszczenia, ostrości i kontrastu zapisane w rekordzie karty; wspólny mechanizm podglądu i magazynu."]},{"version":"2.0.11","date":"2026-11-25","changes":["Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.","Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."]},{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.14';
+const LOCAL_HISTORY=[{"version":"2.0.14","date":"2026-11-25","changes":["Korekta zdjęcia tarczy: jasność i kontrast na podglądzie, z resetem i zachowaniem oryginału.","Czytelniejsze oznaczenia środka i pierścieni, podgląd zaznaczenia podczas przeciągania palcem, zatwierdzanie po puszczeniu.","Punktacja i automatyczne wykrywanie bez zmian."]},{"version":"2.0.13","date":"2026-11-25","changes":["Mocniejsze czyszczenie: dodatkowe usuwanie szarych resztek tła, jasnych obwódek i oderwanych plam.","Usunięcie ikony pustego kafelka z podglądu zdjęcia."]},{"version":"2.0.12","date":"2026-11-25","changes":["Obróbka zdjęć przeniesiona z magazynu do edycji pojedynczej karty, z podglądem kafelka sejfu.","Osobne ustawienia czyszczenia, ostrości i kontrastu zapisane w rekordzie karty; wspólny mechanizm podglądu i magazynu."]},{"version":"2.0.11","date":"2026-11-25","changes":["Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.","Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."]},{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -474,4 +474,107 @@ function startHome(){
  document.addEventListener('resume',()=>{suspended=true;resume();});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHome,{once:true});else startHome();
+})();
+
+;(()=>{'use strict';
+const defaults={brightness:0,contrast:0};
+function normalize(v){return {brightness:Math.max(-50,Math.min(50,Number(v?.brightness)||0)),contrast:Math.max(-40,Math.min(80,Number(v?.contrast)||0))};}
+let lastState=null,settings={...defaults},showGuides=true,calibrationPreview=null;
+function syncState(){
+ if(typeof targetState==='undefined'||!targetState)return;
+ if(lastState!==targetState){lastState=targetState;settings=normalize(targetState.kgImageSettings);showGuides=true;calibrationPreview=null;}
+}
+function filterValue(v){const a=normalize(v);return 'brightness('+(100+a.brightness)+'%) contrast('+(100+a.contrast)+'%)';}
+function drawTarget(){
+ syncState();
+ const canvas=document.getElementById('targetCanvas');if(!canvas||!targetImageReady())return;
+ const available=canvas.parentElement.clientWidth||350,cw=Math.min(1150,available),ratio=targetImage.naturalHeight/targetImage.naturalWidth,ch=targetBetween(Math.round(cw*ratio),230,Math.max(420,window.innerHeight*.8));
+ const dpr=Math.min(2,window.devicePixelRatio||1);
+ canvas.width=Math.round(cw*dpr);canvas.height=Math.round(ch*dpr);canvas.style.width=cw+'px';canvas.style.height=ch+'px';
+ const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#0a0b0d';ctx.fillRect(0,0,cw,ch);
+ const scale=Math.min(cw/targetImage.naturalWidth,ch/targetImage.naturalHeight)*targetZoom,dx=(cw-targetImage.naturalWidth*scale)/2+targetPan.x,dy=(ch-targetImage.naturalHeight*scale)/2+targetPan.y;
+ targetCanvasTransform={cw,ch,dx,dy,scale};
+ ctx.save();ctx.filter=filterValue(settings);ctx.drawImage(targetImage,dx,dy,targetImage.naturalWidth*scale,targetImage.naturalHeight*scale);ctx.restore();
+ function outlined(path,color,width,dash=[]){ctx.save();ctx.setLineDash(dash);ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();path();ctx.strokeStyle='rgba(0,0,0,.85)';ctx.lineWidth=width+3;ctx.stroke();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();ctx.restore();}
+ function label(str,x,y,color){ctx.save();ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';const tw=ctx.measureText(str).width+12;const xx=Math.max(tw/2,Math.min(cw-tw/2,x)),yy=Math.max(10,Math.min(ch-10,y));ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(xx-tw/2,yy-9,tw,18);ctx.fillStyle=color;ctx.fillText(str,xx,yy);ctx.restore();}
+ const center=calibrationPreview?.mode==='center'?calibrationPreview.point:targetState.center;
+ if(showGuides&&center){
+  const x=dx+center.x*scale,y=dy+center.y*scale,rings=Object.entries(targetRingMap(targetState)).filter(([_,r])=>Number(r)>0).sort((a,b)=>Number(b[1])-Number(a[1]));
+  const active=String(targetCalibrateScore);
+  for(const [score,r] of rings){
+   const selected=score===active&&targetMode==='radius',color=selected?'#ffe34e':'#54e7dd';
+   if(selected&&calibrationPreview?.mode==='radius')continue;
+   outlined(()=>ctx.arc(x,y,Number(r)*scale,0,Math.PI*2),color,selected?2.6:1.4,selected?[]:[6,4]);
+   label(score+' pkt',x+Number(r)*scale*.707,y-Number(r)*scale*.707,color);
+  }
+  if(!rings.length&&!targetState.requiresCalibration&&targetState.radius>0)outlined(()=>ctx.arc(x,y,targetState.radius*scale,0,Math.PI*2),'#54e7dd',1.5,[6,4]);
+  if(calibrationPreview?.mode==='radius'){
+   const p=calibrationPreview.point,r=Math.hypot(p.x-center.x,p.y-center.y)*scale;
+   outlined(()=>ctx.arc(x,y,r,0,Math.PI*2),'#ffe34e',2.5);
+   label(active+' pkt · podgląd',x+r*.707,y-r*.707,'#ffe34e');
+  }
+  const color=targetMode==='center'?'#ffe34e':'#54e7dd';
+  outlined(()=>{ctx.moveTo(x-16,y);ctx.lineTo(x-5,y);ctx.moveTo(x+5,y);ctx.lineTo(x+16,y);ctx.moveTo(x,y-16);ctx.lineTo(x,y-5);ctx.moveTo(x,y+5);ctx.lineTo(x,y+16);},color,2.5);
+  outlined(()=>ctx.arc(x,y,3.5,0,Math.PI*2),color,1.5);label('ŚRODEK',x,y+27,color);
+ }
+ ctx.font='bold 10px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+ // Existing hit markers and score calculation are unchanged.
+ for(let i=0;i<targetState.holes.length;i++){const h=targetState.holes[i],x=dx+h.x*scale,y=dy+h.y*scale,r=i===targetSelected?17:14;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=h.source==='auto'&&!h.verified?'rgba(168,70,24,.70)':'rgba(19,81,75,.70)';ctx.fill();ctx.lineWidth=i===targetSelected?3:2;ctx.strokeStyle=i===targetSelected?'#fff0ab':'#f4d194';ctx.stroke();ctx.fillStyle='#fff';ctx.fillText(String(targetComputedScore(h)),x,y);}
+}
+function mountControls(){
+ syncState();const canvas=document.getElementById('targetCanvas');if(!canvas)return;
+ const workspace=canvas.closest('.target-workspace')||canvas.parentElement;
+ if(workspace.previousElementSibling?.dataset.kgTargetAdjust==='1')return;
+ const panel=document.createElement('section');panel.dataset.kgTargetAdjust='1';panel.style.cssText='background:#191711;border:1px solid #786344;border-radius:6px;padding:12px;margin:12px 0;display:grid;gap:10px;color:#eedfc6;';
+ const title=document.createElement('strong');title.textContent='KOREKTA ZDJĘCIA TARCZY';
+ const help=document.createElement('small');help.textContent='Dostosuj obraz przed ręcznym oznaczaniem. Oryginalne zdjęcie, automatyczne wykrywanie i sposób liczenia punktów nie zmieniają się.';
+ const controls={};
+ for(const [key,caption,min,max] of [['brightness','Jasność',-50,50],['contrast','Kontrast',-40,80]]){
+  const holder=document.createElement('label');holder.style.cssText='display:grid;gap:5px;font-size:13px;color:#e6cfa3;';
+  const label=document.createElement('span'),input=document.createElement('input');input.type='range';input.min=String(min);input.max=String(max);input.step='1';input.style.cssText='width:100%;accent-color:#b28e4c;';input.setAttribute('aria-label',caption);
+  controls[key]={label,input,caption};holder.append(label,input);panel.append(holder);
+  input.oninput=()=>{settings[key]=Number(input.value);targetState.kgImageSettings={...settings};label.textContent=caption+' · '+(settings[key]>0?'+':'')+settings[key]+'%';drawTarget();};
+ }
+ function sync(){for(const [key,c] of Object.entries(controls)){c.input.value=String(settings[key]);c.label.textContent=c.caption+' · '+(settings[key]>0?'+':'')+settings[key]+'%';}}
+ const buttons=document.createElement('div');buttons.style.cssText='display:flex;gap:8px;flex-wrap:wrap;';
+ function button(t,fn){const b=document.createElement('button');b.type='button';b.className='gun-button ghost';b.textContent=t;b.style.flex='1 1 auto';b.onclick=fn;buttons.append(b);return b;}
+ button('RESET FILTRÓW',()=>{settings={...defaults};targetState.kgImageSettings={...settings};sync();drawTarget();});
+ const guide=button('UKRYJ OKRĘGI',()=>{showGuides=!showGuides;guide.textContent=showGuides?'UKRYJ OKRĘGI':'POKAŻ OKRĘGI';drawTarget();});guide.textContent=showGuides?'UKRYJ OKRĘGI':'POKAŻ OKRĘGI';
+ const instructions=document.createElement('small');instructions.textContent='Żółty: aktualnie zaznaczana granica. Turkusowy: zapisane granice. Przy kalibracji przeciągnij palcem i puść, aby zatwierdzić.';
+ panel.prepend(title,help);panel.append(buttons,instructions);workspace.before(panel);sync();
+}
+function boundedPoint(e){const p=targetToCanvasSpace(e),i=p&&targetToImage(p);if(!i||i.x<0||i.y<0||i.x>targetImage.naturalWidth||i.y>targetImage.naturalHeight)return null;return i;}
+function install(){
+ if(typeof window.targetDraw!=='function'||typeof window.targetOnPointerDown!=='function')return;
+ window.targetDraw=drawTarget;
+ const down=window.targetOnPointerDown,move=window.targetOnPointerMove,up=window.targetOnPointerUp;
+ window.targetOnPointerDown=function(e){
+  if(!targetImageReady()||!['center','radius'].includes(targetMode))return down.apply(this,arguments);
+  if(calibrationPreview)return;
+  const p=boundedPoint(e);if(!p)return;
+  document.getElementById('targetCanvas').setPointerCapture(e.pointerId);
+  calibrationPreview={mode:targetMode,point:p,id:e.pointerId};showGuides=true;drawTarget();
+ };
+ window.targetOnPointerMove=function(e){
+  if(!calibrationPreview)return move.apply(this,arguments);
+  if(calibrationPreview.id!==e.pointerId)return;const p=boundedPoint(e);if(p){calibrationPreview.point=p;drawTarget();}
+ };
+ window.targetOnPointerUp=function(e){
+  if(!calibrationPreview)return up.apply(this,arguments);
+  if(calibrationPreview.id!==e.pointerId)return;
+  const p=boundedPoint(e)||calibrationPreview.point,mode=calibrationPreview.mode;calibrationPreview=null;
+  if(mode==='center'){targetState.center={x:p.x,y:p.y};targetSetMode('radius');targetUpdateHits();return;}
+  if(!targetState.center){drawTarget();return;}
+  const r=Math.hypot(p.x-targetState.center.x,p.y-targetState.center.y),score=targetCalibrateScore,map=targetRingMap(targetState);
+  if(r<5){targetFeedback('Granica zbyt blisko środka tarczy.');drawTarget();return;}
+  for(const [s,val] of Object.entries(map)){const v=Number(s),r0=Number(val);if(v===score)continue;if((v>score&&r<=r0)||(v<score&&r>=r0)){targetFeedback('Granica '+score+' pkt nie pasuje do '+v+' pkt. Wskaż ponownie.');drawTarget();return;}}
+  targetState.ringBoundaries={...map,[score]:r};targetState.requiresCalibration=true;targetState.radius=Math.max(targetState.radius||0,r);targetSetMode('add');targetUpdateHits();targetFeedback('Zapisano granicę '+score+' pkt. Wybierz następny pierścień.');
+ };
+ const init=window.targetInitUI;
+ if(typeof init==='function')window.targetInitUI=function(){syncState();const result=init.apply(this,arguments);const canvas=document.getElementById('targetCanvas');if(canvas)canvas.addEventListener('pointercancel',()=>{calibrationPreview=null;drawTarget();});mountControls();return result;};
+ const originalSave=window.dbTargetSave;
+ if(typeof originalSave==='function')window.dbTargetSave=function(rec){return originalSave.call(this,{...rec,kgImageSettings:normalize(targetState?.kgImageSettings)});};
+ const view=document.getElementById('view');if(view)new MutationObserver(mountControls).observe(view,{childList:true,subtree:true});mountControls();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
