@@ -1,7 +1,15 @@
 {
-  "version": "2.0.14",
+  "version": "2.0.15",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.15",
+      "date": "2026-11-25",
+      "changes": [
+        "Odliczanie przed rozpoczęciem z krótkimi sygnałami i odliczanie pozostałego czasu PAR na ekranie.",
+        "Dłuższy sygnał końcowy (0,85 s); dźwięk nie jest już natychmiast zamykany przez timer."
+      ]
+    },
     {
       "version": "2.0.14",
       "date": "2026-11-25",
