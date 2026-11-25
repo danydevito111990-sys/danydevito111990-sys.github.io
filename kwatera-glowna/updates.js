@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.11';
-const LOCAL_HISTORY=[{"version":"2.0.11","date":"2026-11-25","changes":["Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.","Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."]},{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.12';
+const LOCAL_HISTORY=[{"version":"2.0.12","date":"2026-11-25","changes":["Obróbka zdjęć przeniesiona z magazynu do edycji pojedynczej karty, z podglądem kafelka sejfu.","Osobne ustawienia czyszczenia, ostrości i kontrastu zapisane w rekordzie karty; wspólny mechanizm podglądu i magazynu."]},{"version":"2.0.11","date":"2026-11-25","changes":["Regulacja ostrości i kontrastu miniatur, niezależnie od filtra tła; ustawienia zapamiętywane lokalnie.","Wyostrzanie z ochroną przezroczystości i ograniczeniem obwódek; tryb Oryginał pomija wszystkie filtry."]},{"version":"2.0.10","date":"2026-11-25","changes":["Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.","Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."]},{"version":"2.0.9","date":"2026-11-25","changes":["Domyślny filtr adaptacyjny z dodatkowym wykrywaniem dużych jasnych resztek papieru i tła.","Ponowne czyszczenie częściowo przezroczystych zdjęć; zachowany tryb delikatny i oryginał.","Odczyt zdjęcia z właściwej karty zamiast polegania wyłącznie na kolejności listy."]},{"version":"2.0.8","date":"2026-11-25","changes":["Powrót na Pulpit po wznowieniu aplikacji, także po przywróceniu procesu lub okna PWA; bez kasowania danych.","Zachowanie bieżącego widoku przy powrocie z systemowego wyboru pliku."]},{"version":"2.0.7","date":"2026-11-25","changes":["Przywrócono delikatne czyszczenie jako domyślne; dostępny mocniejszy filtr i podgląd oryginałów.","Wczytywanie PNG z zachowaniem przezroczystości, poprawiona jakość JPEG; bez zmian dotychczasowych danych."]},{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -265,51 +265,121 @@ let photoEnhancement=readEnhancement();
 
 
 const cache=new Map();
-function cleanCabinet(){
- const grid=document.querySelector('.cabinet-grid');if(!grid)return;
- let toolbar=grid.parentElement.querySelector('[data-kg-photo-version]');
- if(!toolbar){
-  toolbar=document.createElement('div');toolbar.dataset.kgPhotoVersion='2.0.11';toolbar.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px;color:#ddd1b7;font-size:11px;flex-wrap:wrap;';
-  const label=document.createElement('span');label.textContent='Filtr zdjęć 2.0.11';
-  const select=document.createElement('select');select.setAttribute('aria-label','Siła czyszczenia zdjęć');select.style.cssText='max-width:100%;font:inherit;background:#191b19;color:#e7decd;border:1px solid #655d4c;border-radius:5px;padding:5px;';
-  for(const [v,t] of Object.entries(modeLabels)){const option=document.createElement('option');option.value=v;option.textContent=t;select.append(option);}select.value=photoMode;
-  select.onchange=()=>{photoMode=select.value;try{localStorage.setItem('kg-photo-filter-mode',photoMode)}catch{}cleanCabinet();};
-  const adjustments=document.createElement('div');adjustments.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;width:100%;align-items:center;';
-  const controls={};
-  for(const [key,caption,max] of [['sharp','Ostrość',60],['contrast','Kontrast',25]]){
-   const holder=document.createElement('label');holder.style.cssText='display:grid;gap:3px;min-width:0;';
-   const name=document.createElement('span'),input=document.createElement('input');name.textContent=caption+' · '+photoEnhancement[key]+'%';
-   input.type='range';input.min='0';input.max=String(max);input.step='1';input.value=String(photoEnhancement[key]);input.style.cssText='width:100%;accent-color:#b28e4c;';input.setAttribute('aria-label',caption);
-   input.oninput=()=>{name.textContent=caption+' · '+input.value+'%';};
-   input.onchange=()=>{photoEnhancement[key]=Number(input.value);try{localStorage.setItem('kg-photo-enhancement',JSON.stringify(photoEnhancement))}catch{}cleanCabinet();};
-   holder.append(name,input);adjustments.append(holder);controls[key]={name,input,caption};
-  }
-  const reset=document.createElement('button');reset.type='button';reset.textContent='Domyślne';reset.style.cssText='font:inherit;color:inherit;background:#191b19;border:1px solid #655d4c;border-radius:5px;padding:5px;';
-  reset.onclick=()=>{photoEnhancement={...enhancementDefaults};for(const [key,c] of Object.entries(controls)){c.input.value=String(photoEnhancement[key]);c.name.textContent=c.caption+' · '+c.input.value+'%';}try{localStorage.setItem('kg-photo-enhancement',JSON.stringify(photoEnhancement))}catch{}cleanCabinet();};
-  adjustments.append(reset);toolbar.append(label,select,adjustments);grid.before(toolbar);
- }
- const records=typeof allGuns!=='undefined'&&Array.isArray(allGuns)?allGuns:[];
- grid.querySelectorAll('.weapon-tile').forEach((tile,index)=>{
-  const img=tile.querySelector('img[data-clean-cabinet]');if(!img)return;
-  img.dataset.cleanStarted='1';
-  const click=tile.getAttribute('onclick')||'';const id=click.match(/showWeapon\(['"]([^'"]+)['"]\)/)?.[1];const record=id?records.find(w=>String(w.id)===id):null;
-  if(!img._kgOriginal)img._kgOriginal=(record&&record.photo)||img.getAttribute('src');
-  const src=img._kgOriginal;const mode=photoMode,sharp=photoEnhancement.sharp,contrast=photoEnhancement.contrast;const signature=mode+'|'+sharp+'|'+contrast;if(!src||img.dataset.kgCleanV11===signature)return;
-  img.dataset.kgCleanV11=signature;
-  function apply(result){if(!img.isConnected||img.dataset.kgCleanV11!==signature)return;img.src=result||src;img.classList.toggle('photo-cleaned',!!result||/^data:image\/png/i.test(src));img.dataset.kgPhotoResult=result?'cleaned':'original';}
-  if(mode==='original'){apply(null);return;}
-  const key=signature+'|'+src;if(cache.has(key)){apply(cache.get(key));return;}
+function photoConfig(value){
+ const v=value&&typeof value==='object'?value:{};
+ return {mode:Object.hasOwn(modeLabels,v.mode)?v.mode:photoMode,
+ sharp:Number.isFinite(v.sharp)?Math.round(Math.max(0,Math.min(60,v.sharp))):photoEnhancement.sharp,
+ contrast:Number.isFinite(v.contrast)?Math.round(Math.max(0,Math.min(25,v.contrast))):photoEnhancement.contrast};
+}
+const photoSignature=c=>[c.mode,c.sharp,c.contrast].join('|');
+function renderPhoto(src,config){
+ const c=photoConfig(config),key=photoSignature(c)+'|'+src;
+ if(!src||c.mode==='original')return Promise.resolve({src,processed:false});
+ if(cache.has(key))return cache.get(key);
+ const task=new Promise(resolve=>{
   const source=new Image();
   source.onload=()=>{try{
-   const c=document.createElement('canvas'),scale=Math.min(1,1100/Math.max(source.naturalWidth,source.naturalHeight));
-   c.width=Math.max(1,Math.round(source.naturalWidth*scale));c.height=Math.max(1,Math.round(source.naturalHeight*scale));
-   const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0,c.width,c.height);const frame=ctx.getImageData(0,0,c.width,c.height);
-   let result=null;
-   const cleaned=maskBackground(frame.data,c.width,c.height,mode);const enhanced=enhancePhoto(frame.data,c.width,c.height,sharp,contrast);if(cleaned||enhanced){ctx.putImageData(frame,0,0);result=c.toDataURL('image/png');}
-   if(cache.size>=36)cache.clear();cache.set(key,result);apply(result);
-  }catch{apply(null);}};
-  source.onerror=()=>apply(null);source.src=src;
+   const canvas=document.createElement('canvas'),scale=Math.min(1,1100/Math.max(source.naturalWidth,source.naturalHeight));
+   canvas.width=Math.max(1,Math.round(source.naturalWidth*scale));canvas.height=Math.max(1,Math.round(source.naturalHeight*scale));
+   const ctx=canvas.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0,canvas.width,canvas.height);const frame=ctx.getImageData(0,0,canvas.width,canvas.height);
+   const cleaned=maskBackground(frame.data,canvas.width,canvas.height,c.mode),enhanced=enhancePhoto(frame.data,canvas.width,canvas.height,c.sharp,c.contrast);
+   if(cleaned||enhanced){ctx.putImageData(frame,0,0);resolve({src:canvas.toDataURL('image/png'),processed:true});}
+   else resolve({src,processed:false});
+  }catch{resolve({src,processed:false,error:true});}};
+  source.onerror=()=>resolve({src,processed:false,error:true});source.src=src;
  });
+ if(cache.size>=24)cache.clear();cache.set(key,task);return task;
+}
+function applyPhoto(img,result,original){
+ img.src=result.src||original;
+ img.classList.toggle('photo-cleaned',!!result.processed||/^data:image\/png/i.test(original));
+}
+function cleanCabinet(){
+ const grid=document.querySelector('.armory-cabinet .cabinet-grid');if(!grid)return;
+ const records=typeof allGuns!=='undefined'&&Array.isArray(allGuns)?allGuns:[];
+ grid.querySelectorAll('.weapon-tile').forEach(tile=>{
+  const img=tile.querySelector('img[data-clean-cabinet]');if(!img)return;
+  img.dataset.cleanStarted='1';
+  const click=tile.getAttribute('onclick')||'',id=click.match(/showWeapon\(['"]([^'"]+)['"]\)/)?.[1];
+  const record=id?records.find(w=>String(w.id)===id):null;
+  if(!img._kgOriginal)img._kgOriginal=(record&&record.photo)||img.getAttribute('src');
+  const src=img._kgOriginal,config=photoConfig(record?.kgPhotoSettings),signature=photoSignature(config);
+  if(!src||img.dataset.kgCleanV12===signature)return;
+  img.dataset.kgCleanV12=signature;
+  renderPhoto(src,config).then(result=>{if(img.isConnected&&img.dataset.kgCleanV12===signature)applyPhoto(img,result,src);});
+ });
+}
+function currentRecord(){
+ return typeof allGuns!=='undefined'&&typeof gunId!=='undefined'?allGuns.find(w=>w.id===gunId):null;
+}
+function currentPhoto(form){
+ if(typeof photoPending!=='undefined'&&photoPending!==null)return photoPending;
+ return currentRecord()?.photo||form.querySelector('img#photoPreview')?.getAttribute('src')||'';
+}
+function mountPhotoEditor(){
+ const form=document.getElementById('gunForm');if(!form)return;
+ if(form._kgPhotoEditor){form._kgPhotoEditor.refresh();return;}
+ const upload=form.querySelector('.photo-upload');if(!upload)return;
+ const record=currentRecord();
+ let draft=photoConfig(record?.kgPhotoSettings),lastSrc=null,timer=0,revision=0;
+ const editor=document.createElement('section');editor.className='kg-photo-editor';editor.style.cssText='margin-top:12px;padding:12px;border:1px solid #655d4c;border-radius:7px;background:#191b19;color:#e7decd;display:grid;gap:10px;';
+ const title=document.createElement('strong');title.textContent='OBRÓBKA ZDJĘCIA W SEJFIE';
+ const hint=document.createElement('small');hint.textContent='Ustawienia dotyczą tylko tej karty. Zapisz kartę, aby je zachować. Oryginał pozostaje bez zmian.';
+ const previewTitle=document.createElement('small');previewTitle.textContent='PODGLĄD KAFELKA W SEJFIE';
+ const grid=document.createElement('div');grid.className='cabinet-grid';grid.style.cssText='display:grid;grid-template-columns:minmax(0,1fr);width:min(100%,clamp(128px,calc((100vw - 78px)/2),280px));padding:0;gap:0;margin:0 auto;box-sizing:border-box;';
+ const tile=document.createElement('div');tile.className='weapon-tile safe-slot';tile.style.cursor='default';
+ const pic=document.createElement('span');pic.className='weapon-pic photo-only';
+ const image=document.createElement('img');image.alt='Podgląd zdjęcia w sejfie';image.hidden=true;
+ const placeholder=document.createElement('span');placeholder.className='weapon-placeholder';placeholder.textContent='♜';
+ pic.append(image,placeholder);tile.append(pic);grid.append(tile);
+ const status=document.createElement('small');status.setAttribute('role','status');status.style.cssText='text-align:center;color:#c4b79f;';
+ const modeLabel=document.createElement('label');modeLabel.textContent='Czyszczenie tła';modeLabel.style.cssText='display:grid;gap:4px;';
+ const select=document.createElement('select');select.setAttribute('aria-label','Czyszczenie tła');select.style.cssText='width:100%;min-width:0;background:#191b19;color:#e7decd;border:1px solid #655d4c;padding:7px;border-radius:5px;';
+ for(const [key,label] of Object.entries(modeLabels)){const option=document.createElement('option');option.value=key;option.textContent=label;select.append(option);}select.value=draft.mode;modeLabel.append(select);
+ const sliders=document.createElement('div');sliders.style.cssText='display:grid;gap:10px;';
+ const controls={};
+ for(const [key,caption,max] of [['sharp','Ostrość',60],['contrast','Kontrast',25]]){
+  const holder=document.createElement('label');holder.style.cssText='display:grid;gap:4px;';
+  const label=document.createElement('span'),input=document.createElement('input');input.type='range';input.min='0';input.max=String(max);input.step='1';input.setAttribute('aria-label',caption);input.style.cssText='width:100%;accent-color:#b28e4c;';
+  controls[key]={label,input,caption};holder.append(label,input);sliders.append(holder);
+  input.oninput=()=>{draft[key]=Number(input.value);syncControls();schedule();};
+ }
+ function syncControls(){
+  select.value=draft.mode;
+  for(const [key,c] of Object.entries(controls)){c.input.value=String(draft[key]);c.label.textContent=c.caption+' · '+draft[key]+'%';c.input.disabled=draft.mode==='original';}
+ }
+ select.onchange=()=>{draft.mode=select.value;syncControls();schedule();};
+ const reset=document.createElement('button');reset.type='button';reset.className='gun-button ghost';reset.textContent='PRZYWRÓĆ DOMYŚLNE';
+ reset.onclick=()=>{draft={mode:'auto',...enhancementDefaults};syncControls();schedule();};
+ function update(){
+  const src=currentPhoto(form),ticket=++revision,config={...draft};
+  if(!src){image.hidden=true;image.style.display='none';image.removeAttribute('src');placeholder.hidden=false;status.textContent='Dodaj zdjęcie, aby zobaczyć podgląd.';return;}
+  status.textContent='Przetwarzanie podglądu…';
+  renderPhoto(src,config).then(result=>{
+   if(ticket!==revision||!form.isConnected)return;
+   applyPhoto(image,result,src);image.hidden=false;image.style.display='block';placeholder.hidden=true;
+   status.textContent=result.error?'Nie udało się przetworzyć zdjęcia. Pokazano oryginał.':'Tak zdjęcie będzie wyświetlane w sejfie.';
+  });
+ }
+ function schedule(){clearTimeout(timer);++revision;timer=setTimeout(update,120);}
+ function refresh(){const src=currentPhoto(form);if(src!==lastSrc){lastSrc=src;schedule();}}
+ form._kgPhotoEditor={refresh,getConfig:()=>photoConfig(draft)};
+ editor.append(title,hint,previewTitle,grid,status,modeLabel,sliders,reset);upload.after(editor);syncControls();refresh();
+}
+// Keep settings in the same IndexedDB record as the photo; the existing form save
+// performs the single write and existing full backup automatically carries the field.
+function installPhotoSave(){
+ if(typeof window.saveGun!=='function'||typeof window.dbPut!=='function')return;
+ const oldSave=window.saveGun,oldPut=window.dbPut;let pending=null;
+ window.dbPut=function(record){
+  if(pending&&record&&typeof record==='object'){const config=pending;pending=null;return oldPut.call(this,{...record,kgPhotoSettings:config});}
+  return oldPut.apply(this,arguments);
+ };
+ window.saveGun=function(event){
+  const form=document.getElementById('gunForm');
+  pending=form?._kgPhotoEditor?.getConfig()||null;
+  try{return oldSave.apply(this,arguments);}finally{pending=null;}
+ };
 }
 async function loadPhoto(file){
  if(!file)return;
@@ -328,7 +398,7 @@ async function loadPhoto(file){
   const info=document.getElementById('photoInfo');if(info)info.textContent='Gotowe do zapisu · '+(alpha?'PNG z przezroczystością':'JPEG')+' · '+Math.round(value.length*.75/1024)+' KB. Zdjęcie pozostaje na urządzeniu.';
  }catch(e){notify('Nie można wczytać zdjęcia',e.message||'Spróbuj innego pliku.');}finally{URL.revokeObjectURL(url);}
 }
-function startFix(){installBackup();window.enhanceCabinetImages=cleanCabinet;if(typeof window.chooseWeaponPhoto==='function')window.chooseWeaponPhoto=loadPhoto;const view=document.getElementById('view');if(view)new MutationObserver(cleanCabinet).observe(view,{childList:true,subtree:true});cleanCabinet();}
+function startFix(){installBackup();installPhotoSave();window.enhanceCabinetImages=cleanCabinet;if(typeof window.chooseWeaponPhoto==='function')window.chooseWeaponPhoto=loadPhoto;const view=document.getElementById('view');const refresh=()=>{cleanCabinet();mountPhotoEditor();};if(view)new MutationObserver(refresh).observe(view,{childList:true,subtree:true});refresh();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startFix,{once:true});else startFix();
 })();
 
