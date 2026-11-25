@@ -1,7 +1,15 @@
 {
-  "version": "2.0.12",
+  "version": "2.0.13",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.13",
+      "date": "2026-11-25",
+      "changes": [
+        "Mocniejsze czyszczenie: dodatkowe usuwanie szarych resztek tła, jasnych obwódek i oderwanych plam.",
+        "Usunięcie ikony pustego kafelka z podglądu zdjęcia."
+      ]
+    },
     {
       "version": "2.0.12",
       "date": "2026-11-25",
