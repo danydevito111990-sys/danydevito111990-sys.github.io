@@ -1,7 +1,15 @@
 {
-  "version": "2.0.9",
+  "version": "2.0.10",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.10",
+      "date": "2026-11-25",
+      "changes": [
+        "Domyślny filtr hybrydowy: delikatna baza, mocniejsze czyszczenie wyłącznie rozpoznanych pozostałości tła.",
+        "Kontrola jasnych i teksturowanych obszarów; oryginały zdjęć pozostają bez zmian."
+      ]
+    },
     {
       "version": "2.0.9",
       "date": "2026-11-25",
