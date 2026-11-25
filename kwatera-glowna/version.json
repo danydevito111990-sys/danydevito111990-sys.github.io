@@ -1,7 +1,15 @@
 {
-  "version": "2.0.5",
+  "version": "2.0.6",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.6",
+      "date": "2026-11-25",
+      "changes": [
+        "Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.",
+        "Bez zmian lokalnych danych i adresu instalacji PWA."
+      ]
+    },
     {
       "version": "2.0.5",
       "date": "2026-11-25",
