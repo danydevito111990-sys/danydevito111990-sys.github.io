@@ -1,7 +1,15 @@
 {
-  "version": "2.0.11",
+  "version": "2.0.12",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.12",
+      "date": "2026-11-25",
+      "changes": [
+        "Obróbka zdjęć przeniesiona z magazynu do edycji pojedynczej karty, z podglądem kafelka sejfu.",
+        "Osobne ustawienia czyszczenia, ostrości i kontrastu zapisane w rekordzie karty; wspólny mechanizm podglądu i magazynu."
+      ]
+    },
     {
       "version": "2.0.11",
       "date": "2026-11-25",
