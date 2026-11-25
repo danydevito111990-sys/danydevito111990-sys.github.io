@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.3';
-const LOCAL_HISTORY=[{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.4';
+const LOCAL_HISTORY=[{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -70,33 +70,50 @@ function backupDialog(name,content,type){
 function installBackup(){if(typeof window.downloadText==='function'){const old=window.downloadText;window.downloadText=function(name,content,type){if(/\.json$/i.test(name)){try{return backupDialog(name,content,type)}catch(e){notify('Błąd przygotowania kopii',e.message);return;}}return old.apply(this,arguments);};}}
 /* Non-destructive, local thumbnail cleanup for uniform backgrounds. */
 function maskBackground(d,w,h){
- const n=w*h,edge=[];if(w<8||h<8)return false;
- const step=Math.max(1,Math.floor(Math.min(w,h)/48));
- for(let x=0;x<w;x+=step){edge.push(x,(h-1)*w+x)}
- for(let y=1;y<h-1;y+=step){edge.push(y*w,y*w+w-1)}
- const bins=new Map();for(const i of edge){const k=i*4;if(d[k+3]<32)continue;const key=[d[k]>>5,d[k+1]>>5,d[k+2]>>5].join(',');const b=bins.get(key)||[0,0,0,0];b[0]++;b[1]+=d[k];b[2]+=d[k+1];b[3]+=d[k+2];bins.set(key,b);}
- let top=null;for(const b of bins.values())if(!top||b[0]>top[0])top=b;if(!top)return false;
- const rgb=top.slice(1).map(x=>x/top[0]);const dist=i=>{const k=i*4;return Math.max(Math.abs(d[k]-rgb[0]),Math.abs(d[k+1]-rgb[1]),Math.abs(d[k+2]-rgb[2]));};
- const similar=i=>d[i*4+3]<32||dist(i)<=34;
- if(edge.filter(similar).length/edge.length<.60)return false;
- const seen=new Uint8Array(n),queue=new Int32Array(n);let head=0,tail=0;
- function push(i){if(!seen[i]&&similar(i)){seen[i]=1;queue[tail++]=i;}}
- for(let x=0;x<w;x++){push(x);push((h-1)*w+x)}
- for(let y=0;y<h;y++){push(y*w);push(y*w+w-1)}
- while(head<tail){const i=queue[head++],x=i%w,y=(i/w)|0;if(x>0)push(i-1);if(x<w-1)push(i+1);if(y>0)push(i-w);if(y<h-1)push(i+w)}
- if(tail<n*.10||tail>n*.94)return false;
- for(let j=0;j<tail;j++)d[queue[j]*4+3]=0;return true;
+ const n=w*h;if(w<8||h<8)return false;
+ const edge=[];for(let x=0;x<w;x++){edge.push(x,(h-1)*w+x)}for(let y=1;y<h-1;y++){edge.push(y*w,y*w+w-1)}
+ const bins=new Map();let transparent=0;
+ for(const i of edge){const k=i*4;if(d[k+3]<32){transparent++;continue}const key=[d[k]>>5,d[k+1]>>5,d[k+2]>>5].join(',');let b=bins.get(key);if(!b){b=[0,0,0,0];bins.set(key,b)}b[0]++;b[1]+=d[k];b[2]+=d[k+1];b[3]+=d[k+2]}
+ let best=null;for(const b of bins.values())if(!best||b[0]>best[0])best=b;
+ const neutralWhite= i=>{const k=i*4;return Math.min(d[k],d[k+1],d[k+2])>=225&&Math.max(d[k],d[k+1],d[k+2])-Math.min(d[k],d[k+1],d[k+2])<=30};
+ const whiteShare=edge.filter(neutralWhite).length/edge.length;
+ const already=transparent/edge.length>.55;
+ if(!best&&!already)return false;
+ const rgb=whiteShare>.28||already?[250,250,250]:best.slice(1).map(v=>v/best[0]);
+ const pale=Math.min(...rgb)>180&&Math.max(...rgb)-Math.min(...rgb)<38;
+ const diff=i=>{let k=i*4;return Math.max(Math.abs(d[k]-rgb[0]),Math.abs(d[k+1]-rgb[1]),Math.abs(d[k+2]-rgb[2]))};
+ const close=i=>d[i*4+3]<32||diff(i)<=(pale?45:30)||(pale&&neutralWhite(i));
+ const share=edge.filter(close).length/edge.length;if(share<.34&&!already)return false;
+ const seen=new Uint8Array(n),q=new Int32Array(n);let head=0,tail=0;
+ const push=i=>{if(!seen[i]&&close(i)){seen[i]=1;q[tail++]=i}};
+ const walk=fn=>{while(head<tail){const i=q[head++],x=i%w,y=(i/w)|0;fn(i);if(x>0)push(i-1);if(x<w-1)push(i+1);if(y>0)push(i-w);if(y<h-1)push(i+w)}};
+ for(const i of edge)push(i);
+ walk(()=>{});const exterior=tail;
+ if(exterior<n*.025&&!already||exterior>n*.975)return false;
+ // Remove enclosed, substantially uniform light patches (not small highlights).
+ if(pale){
+ for(let i=0;i<n;i++){if(seen[i]||d[i*4+3]<32||!close(i))continue;const start=tail;push(i);let whites=0,minx=w,maxx=0,miny=h,maxy=0;walk(j=>{const x=j%w,y=(j/w)|0;minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y);if(neutralWhite(j)||diff(j)<20)whites++});const count=tail-start;
+ if(count<Math.max(18,n*.00012)||whites/count<.70||maxx-minx<3||maxy-miny<3){for(let j=start;j<tail;j++)seen[q[j]]=2;} }
+ }
+ let removed=0,opaque=0;for(let i=0;i<n;i++){if(d[i*4+3]>32){opaque++;if(seen[i]===1)removed++}}
+ if(removed<Math.max(5,opaque*.003)||opaque-removed<n*.012)return false;
+ for(let i=0;i<n;i++){if(seen[i]===1)d[i*4+3]=0;}
+ // Soften bright fringe adjacent to the newly transparent region.
+ if(pale)for(let i=0;i<n;i++){if(seen[i]===1||d[i*4+3]===0)continue;let x=i%w,y=(i/w)|0;if(!((x>0&&seen[i-1]===1)||(x<w-1&&seen[i+1]===1)||(y>0&&seen[i-w]===1)||(y<h-1&&seen[i+w]===1)))continue;let k=i*4;const distance=diff(i);if(Math.min(d[k],d[k+1],d[k+2])>170&&distance<85)d[k+3]=Math.min(d[k+3],Math.round(255*Math.max(0,Math.min(1,(distance-35)/50))))}
+ return true;
 }
 const cache=new Map();
 function cleanCabinet(){
+ const grid=document.querySelector('.cabinet-grid');
+ if(grid&&!grid.parentElement.querySelector('[data-kg-photo-version]')){const tag=document.createElement('div');tag.dataset.kgPhotoVersion='2.0.4';tag.textContent='Zdjęcia · filtr tła 2.0.4';tag.style.cssText='text-align:right;color:#aaa18e;font-size:10px;padding:3px 12px;';grid.before(tag);}
  document.querySelectorAll('.cabinet-grid img[data-clean-cabinet]').forEach(img=>{
-  if(img.dataset.kgCleanV3)return;img.dataset.kgCleanV3='1';img.dataset.cleanStarted='1';
+  if(img.dataset.kgCleanV4)return;img.dataset.kgCleanV4='1';img.dataset.cleanStarted='1';
   const src=img.getAttribute('src');if(!src)return;
-  function apply(cleaned){if(cleaned&&img.isConnected){img.src=cleaned;img.classList.add('photo-cleaned');}}
+  function apply(cleaned){if(!img.isConnected)return;if(cleaned){img.src=cleaned;img.classList.add('photo-cleaned');img.dataset.kgPhotoResult='cleaned';}else{img.dataset.kgPhotoResult='original';}}
   if(cache.has(src)){apply(cache.get(src));return;}
   const source=new Image();source.onload=()=>{try{const c=document.createElement('canvas'),scale=Math.min(1,1000/Math.max(source.naturalWidth,source.naturalHeight));c.width=Math.max(1,Math.round(source.naturalWidth*scale));c.height=Math.max(1,Math.round(source.naturalHeight*scale));const ctx=c.getContext('2d',{willReadFrequently:true});ctx.drawImage(source,0,0,c.width,c.height);const frame=ctx.getImageData(0,0,c.width,c.height);let result=null;if(maskBackground(frame.data,c.width,c.height)){ctx.putImageData(frame,0,0);result=c.toDataURL('image/png');}if(cache.size>=24)cache.clear();cache.set(src,result);apply(result);}catch{}};source.src=src;
  });
 }
-function startFix(){installBackup();if(typeof window.enhanceCabinetImages==='function')window.enhanceCabinetImages=cleanCabinet;const view=document.getElementById('view');if(view)new MutationObserver(cleanCabinet).observe(view,{childList:true,subtree:true});cleanCabinet();}
+function startFix(){installBackup();window.enhanceCabinetImages=cleanCabinet;const view=document.getElementById('view');if(view)new MutationObserver(cleanCabinet).observe(view,{childList:true,subtree:true});cleanCabinet();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startFix,{once:true});else startFix();
 })();
