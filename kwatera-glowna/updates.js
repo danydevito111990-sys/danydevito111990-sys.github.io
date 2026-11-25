@@ -1,6 +1,6 @@
 (()=>{'use strict';
-const CURRENT='2.0.5';
-const LOCAL_HISTORY=[{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
+const CURRENT='2.0.6';
+const LOCAL_HISTORY=[{"version":"2.0.6","date":"2026-11-25","changes":["Pulpit przy ponownym uruchomieniu i powrocie z tła, z wyjątkiem systemowego wyboru pliku i aktywnych okien dialogowych.","Bez zmian lokalnych danych i adresu instalacji PWA."]},{"version":"2.0.5","date":"2026-11-25","changes":["Adaptacyjne usuwanie jasnego tła z cieniami i gradientami oraz jasnych pozostałości na miniaturach.","Ponowne przetwarzanie oryginałów bez zmiany danych."]},{"version":"2.0.4","date":"2026-11-25","changes":["Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.","Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."]},{"version":"2.0.3","date":"2026-11-25","changes":["Eksport JSON z wyborem zapisu, pobrania lub udostępnienia oraz uczciwym statusem zapisu.","Poprawione niedestrukcyjne usuwanie jednolitego tła miniatur w magazynie."]},{"version":"2.0.2","date":"2026-11-24","changes":["Automatyczne sprawdzanie aktualizacji po uruchomieniu i powrocie do aplikacji.","Ręczne sprawdzanie i instalowanie aktualizacji z poziomu ustawień.","Powiadomienie o dostępnej wersji i historia zmian.","Wersjonowana pamięć offline; bez zmian w lokalnej bazie danych."]},{"version":"2.0.1","date":"2026-11-24","changes":["Pierwsza publikacja PWA pod stałym adresem.","Manifest instalacyjny i podstawowa obsługa offline."]}];
 let registration=null, checking=null, pending=false, applying=false, status='Sprawdzanie dostępności aktualizacji…', lastCheck=0, remoteHistory=null, banner=null;
 const find=id=>document.getElementById(id);
 function draw(){
@@ -111,4 +111,32 @@ function cleanCabinet(){
 }
 function startFix(){installBackup();window.enhanceCabinetImages=cleanCabinet;const view=document.getElementById('view');if(view)new MutationObserver(cleanCabinet).observe(view,{childList:true,subtree:true});cleanCabinet();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startFix,{once:true});else startFix();
+})();
+
+;(()=>{'use strict';
+let suspended=false, preserve=false, pickerUntil=0;
+function modalOpen(){return !!document.querySelector('dialog[open], #modal:not(.hidden), #ammoModal:not(.hidden)');}
+function returnHome(){
+ if(location.hash===''||location.hash==='#home')return false;
+ if(typeof window.render!=='function'){if(typeof window.go==='function')window.go('home');return false;}
+ if(typeof gunScreen!=='undefined')gunScreen='cabinet';
+ if(typeof gunId!=='undefined')gunId=null;
+ if(typeof calFormOpen!=='undefined')calFormOpen=false;
+ if(typeof calEditing!=='undefined')calEditing=null;
+ history.replaceState(history.state,'',location.pathname+location.search+'#home');
+ window.render();
+ window.scrollTo({top:0,behavior:'instant'});
+ return true;
+}
+function startHome(){
+ returnHome();
+ document.addEventListener('click',e=>{if(e.target?.closest?.('input[type=file]'))pickerUntil=Date.now()+120000;},true);
+ for(const event of ['change','cancel'])document.addEventListener(event,e=>{if(e.target?.matches?.('input[type=file]'))pickerUntil=0;},true);
+ document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){suspended=true;preserve=modalOpen()||Date.now()<pickerUntil;return;}
+  if(document.visibilityState==='visible'&&suspended){suspended=false;const skip=preserve;preserve=false;pickerUntil=0;if(!skip&&!modalOpen())returnHome();}
+ });
+ window.addEventListener('pageshow',e=>{if(e.persisted&&!modalOpen()&&Date.now()>=pickerUntil)returnHome();});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startHome,{once:true});else startHome();
 })();
