@@ -1,7 +1,15 @@
 {
-  "version": "2.0.3",
+  "version": "2.0.4",
   "date": "2026-11-25",
   "history": [
+    {
+      "version": "2.0.4",
+      "date": "2026-11-25",
+      "changes": [
+        "Poprawione usuwanie jasnych obwódek i zamkniętych obszarów tła na miniaturach.",
+        "Ponowne przetwarzanie zdjęć bez zmiany oryginałów; oznaczenie wersji mechanizmu w magazynie."
+      ]
+    },
     {
       "version": "2.0.3",
       "date": "2026-11-25",
