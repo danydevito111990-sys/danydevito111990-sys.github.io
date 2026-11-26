@@ -562,7 +562,7 @@ function drawTarget(){
 function mountControls(){
  syncState();const canvas=document.getElementById('targetCanvas');if(!canvas)return;
  const workspace=canvas.closest('.target-workspace')||canvas.parentElement;
- if(workspace.previousElementSibling?.dataset.kgTargetAdjust==='1'){updateRingConfirm();return;}
+ if(workspace.nextElementSibling?.dataset.kgTargetAdjust==='1'){updateRingConfirm();return;}
  const panel=document.createElement('section');panel.dataset.kgTargetAdjust='1';panel.style.cssText='background:#191711;border:1px solid #786344;border-radius:6px;padding:12px;margin:12px 0;display:grid;gap:10px;color:#eedfc6;';
  const title=document.createElement('strong');title.textContent='KOREKTA ZDJĘCIA TARCZY';
  const help=document.createElement('small');help.textContent='Dostosuj obraz przed ręcznym oznaczaniem. Oryginalne zdjęcie, automatyczne wykrywanie i sposób liczenia punktów nie zmieniają się.';
@@ -575,13 +575,13 @@ function mountControls(){
  }
  function sync(){for(const [key,c] of Object.entries(controls)){c.input.value=String(settings[key]);c.label.textContent=c.caption+' · '+(settings[key]>0?'+':'')+settings[key]+'%';}}
  const buttons=document.createElement('div');buttons.style.cssText='display:flex;gap:8px;flex-wrap:wrap;';
- function button(t,fn){const b=document.createElement('button');b.type='button';b.className='gun-button ghost';b.textContent=t;b.style.flex='1 1 auto';b.onclick=fn;buttons.append(b);return b;}
+ function button(t,fn){const b=document.createElement('button');b.type='button';b.className='gun-button ghost';b.textContent=t;b.style.flex='1 1 auto';b.style.minHeight='48px';b.style.padding='10px 12px';b.onclick=fn;buttons.append(b);return b;}
  button('RESET FILTRÓW',()=>{settings={...defaults};targetState.kgImageSettings={...settings};sync();drawTarget();});
  const guide=button('UKRYJ OKRĘGI',()=>{showGuides=!showGuides;guide.textContent=showGuides?'UKRYJ OKRĘGI':'POKAŻ OKRĘGI';drawTarget();});guide.textContent=showGuides?'UKRYJ OKRĘGI':'POKAŻ OKRĘGI';
  const instructions=document.createElement('small');instructions.textContent='Żółty: wybrany okrąg. Turkusowy: zatwierdzony. Dotknij uchwytu z prawej strony lub wybierz wartość pierścienia, następnie przeciągnij granicę.';
  const draftHelp=document.createElement('small');draftHelp.id='kgRingDraftHelp';draftHelp.textContent='Okręgi 10–7 są propozycją: dopasuj je do tarczy, następnie zatwierdź. Przed zatwierdzeniem propozycja nie jest używana do punktacji.';
  const confirmButton=button('ZATWIERDŹ OKRĘGI 10–7',confirmRings);confirmButton.id='kgConfirmRings';
- panel.prepend(title,help);panel.append(buttons,instructions,draftHelp);workspace.before(panel);sync();updateRingConfirm();
+ panel.prepend(title,help);panel.append(buttons,instructions,draftHelp);workspace.after(panel);sync();updateRingConfirm();
 }
 function boundedPoint(e){const p=targetToCanvasSpace(e),i=p&&targetToImage(p);if(!i||i.x<0||i.y<0||i.x>targetImage.naturalWidth||i.y>targetImage.naturalHeight)return null;return i;}
 function install(){
