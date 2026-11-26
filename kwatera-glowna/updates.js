@@ -856,3 +856,31 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  `;
  document.head.append(style);
 })();
+
+
+/* 2.0.31: visual cleanup, no changes to data, event handlers or geometry. */
+;(()=>{
+ const style=document.createElement('style');
+ style.textContent=`
+ #view:has(#targetCanvas) .kg-retired-ui{display:none!important;}
+ .kg-photo-controls :is(div,nav,section):has(>button):not(:has(>:not(button))):not(:has(>button:not(.kg-retired-ui):not(:disabled):not([aria-disabled="true"]))){display:none!important;}
+ .kg-photo-controls{padding:5px!important;margin:4px 0!important;gap:4px!important;}
+ .kg-photo-controls button{min-height:32px!important;padding:5px 7px!important;font-size:12px!important;letter-spacing:0!important;}
+ .kg-photo-controls :is(div,nav,section):has(>button):not(:has(>:not(button))){gap:4px!important;margin-block:4px!important;}
+ .kg-photo-zoom{margin-block:2px 5px!important;}
+ [data-kg-target-adjust="1"]{padding:7px!important;margin-block:6px!important;}
+ [data-kg-target-adjust="1"]>small{font-size:11px!important;line-height:1.25!important;}
+ `;
+ document.head.append(style);
+ const hiddenLabels=new Set(['przesuń','znajdź przestrzeliny','wyczyść sugestie','potwierdź sugestie']);
+ function cleanup(){
+   const view=document.getElementById('view');
+   if(!view||!view.querySelector('#targetCanvas'))return;
+   for(const b of view.querySelectorAll('button')){
+     const name=b.textContent.trim().replace(/^[^\p{L}\p{N}]+/u,'').replace(/\s+/g,' ').toLocaleLowerCase('pl');
+     b.classList.toggle('kg-retired-ui',hiddenLabels.has(name));
+   }
+ }
+ function init(){const view=document.getElementById('view');if(!view)return;new MutationObserver(cleanup).observe(view,{childList:true,subtree:true,characterData:true});cleanup();}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
