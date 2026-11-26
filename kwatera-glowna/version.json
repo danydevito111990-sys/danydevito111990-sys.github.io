@@ -1,7 +1,14 @@
 {
-  "version": "2.0.30",
+  "version": "2.0.31",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.31",
+      "date": "2026-11-26",
+      "changes": [
+        "Ukrycie przycisku Przesuń oraz trzech przycisków sugestii w widoku zdjęcia; usunięcie pustych rzędów, kompaktowe odstępy. Przesuń zdjęcie pozostaje widoczne. Bez zmian logiki i danych."
+      ]
+    },
     {
       "version": "2.0.30",
       "date": "2026-11-26",
