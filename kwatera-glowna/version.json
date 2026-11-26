@@ -1,7 +1,14 @@
 {
-  "version": "2.0.22",
+  "version": "2.0.23",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.23",
+      "date": "2026-11-26",
+      "changes": [
+        "Ręczna rejestracja: osobny licznik nieocenionych wpisów (?), uwzględnienie ich w liczbie wpisów i oznaczenie niepełnej sumy, zapis w TXT. Zachowane całkowite wartości 0–10 oraz wielokrotne wpisy."
+      ]
+    },
     {
       "version": "2.0.22",
       "date": "2026-11-26",
