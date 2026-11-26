@@ -1,7 +1,14 @@
 {
-  "version": "2.0.28",
+  "version": "2.0.29",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.29",
+      "date": "2026-11-26",
+      "changes": [
+        "Obsługa przeciągania całego podglądu zdjęcia przyciskiem Przesuń zdjęcie. Wyłącznie przesunięcie widoku, bez zmiany zapisanych współrzędnych ani danych."
+      ]
+    },
     {
       "version": "2.0.28",
       "date": "2026-11-26",
