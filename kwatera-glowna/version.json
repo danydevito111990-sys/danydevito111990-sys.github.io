@@ -1,7 +1,14 @@
 {
-  "version": "2.0.29",
+  "version": "2.0.30",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.30",
+      "date": "2026-11-26",
+      "changes": [
+        "Ukrywanie faktycznie wyłączonych przycisków w widoku zdjęcia, kompaktowe odstępy i zawijane grupy przycisków. Przyciski pojawiają się ponownie po włączeniu. Bez zmian logiki ani danych."
+      ]
+    },
     {
       "version": "2.0.29",
       "date": "2026-11-26",
