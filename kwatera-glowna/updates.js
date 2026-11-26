@@ -691,3 +691,32 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })(window,()=>allGuns,()=>render());
 
 ;(()=>{function mount(){const view=document.getElementById('view');if(!view)return;const header=Array.from(view.querySelectorAll('h1,h2,h3,h4,[role="heading"]')).find(el=>/^skaner\s+tarcz$/i.test(el.textContent.trim()));const current=document.getElementById('kgPhotoLink');if(!header){if(current)current.remove();return;}if(current)return;const a=document.createElement('a');a.id='kgPhotoLink';a.href='./aparat.html';a.className='outlineaction';a.textContent='📷 Zrób zdjęcie';a.setAttribute('aria-label','Zrób zdjęcie w niezależnym aparacie');a.style.cssText='display:block;text-align:center;margin:8px 0;text-decoration:none';header.insertAdjacentElement('afterend',a);}function init(){mount();const view=document.getElementById('view');if(view)new MutationObserver(mount).observe(view,{childList:true,subtree:true});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();})();
+
+
+/* General mobile presentation only; no changes to event handlers or data. */
+(function(){
+  const id='kg-mobile-layout-20261126';
+  function install(){
+    if(document.getElementById(id))return;
+    const style=document.createElement('style');
+    style.id=id;
+    style.textContent=`
+@media (max-width:900px){
+  .view {padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px)) !important;min-width:0;}
+  .main {min-width:0;}
+  .mobile-nav .mobbtn {min-height:52px;}
+  .mobile-nav .label {font-size:10px;line-height:1.18;letter-spacing:0;}
+  .view input:not([type=range]):not([type=checkbox]):not([type=radio]), .view select, .view textarea {max-width:100%;min-width:0;}
+  .view button {overflow-wrap:break-word;}
+  .form-buttons {gap:8px;margin-top:16px;}
+}
+@media (max-width:650px){
+  .view {padding-left:10px;padding-right:10px;}
+  .topbar {padding:10px 12px;}
+  .mobile-nav .label {font-size:9px;}
+}
+`;
+    document.head.appendChild(style);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
