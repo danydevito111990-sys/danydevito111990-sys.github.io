@@ -785,3 +785,52 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  function init(){const view=document.getElementById('view');if(!view)return;new MutationObserver(arrange).observe(view,{childList:true,subtree:true});arrange();}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
+
+
+/* 2.0.29: viewport-only drag. Image and all overlays move together.
+   No writes to stored image coordinates or records. */
+;(()=>{
+ let active=null,drag=null,oldTouch='';
+ function stop(){
+   if(drag&&active?.hasPointerCapture?.(drag.id)){try{active.releasePointerCapture(drag.id);}catch(_){}}
+   drag=null;
+   if(active)active.style.touchAction=oldTouch;
+   active=null;
+ }
+ function isViewPan(button){return /przesuń\s+zdjęcie/i.test(button.textContent.trim());}
+ document.addEventListener('click',e=>{
+   const button=e.target.closest?.('button');
+   if(!button)return;
+   if(!isViewPan(button)){stop();return;}
+   stop();
+   queueMicrotask(()=>{
+     const canvas=document.getElementById('targetCanvas');
+     if(!canvas)return;
+     active=canvas;oldTouch=canvas.style.touchAction;canvas.style.touchAction='none';
+   });
+ },true);
+ function consume(e){if(e.cancelable)e.preventDefault();e.stopImmediatePropagation();}
+ document.addEventListener('pointerdown',e=>{
+   if(!active||e.target!==active||drag||e.button!==0)return;
+   if(typeof targetPan!=='object'||!targetPan||typeof window.targetDraw!=='function')return;
+   consume(e);
+   drag={id:e.pointerId,x:e.clientX,y:e.clientY,panX:Number(targetPan.x)||0,panY:Number(targetPan.y)||0};
+   try{active.setPointerCapture(e.pointerId);}catch(_){}
+ },{capture:true,passive:false});
+ document.addEventListener('pointermove',e=>{
+   if(!drag||e.pointerId!==drag.id)return;
+   if(!active?.isConnected){stop();return;}
+   consume(e);
+   targetPan.x=drag.panX+e.clientX-drag.x;
+   targetPan.y=drag.panY+e.clientY-drag.y;
+   window.targetDraw();
+ },{capture:true,passive:false});
+ function end(e){
+   if(!drag||e.pointerId!==drag.id)return;
+   consume(e);drag=null;
+   try{if(active?.hasPointerCapture(e.pointerId))active.releasePointerCapture(e.pointerId);}catch(_){}
+ }
+ document.addEventListener('pointerup',end,{capture:true,passive:false});
+ document.addEventListener('pointercancel',end,{capture:true,passive:false});
+ document.addEventListener('lostpointercapture',e=>{if(drag?.id===e.pointerId)drag=null;},true);
+})();
