@@ -1,7 +1,14 @@
 {
-  "version": "2.0.17",
+  "version": "2.0.18",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.18",
+      "date": "2026-11-26",
+      "changes": [
+        "Przycisk Aparat na głównym ekranie: niezależny moduł fotograficzny z kadrowaniem i zapisem JPEG."
+      ]
+    },
     {
       "version": "2.0.17",
       "date": "2026-11-26",
