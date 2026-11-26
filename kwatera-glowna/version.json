@@ -1,7 +1,14 @@
 {
-  "version": "2.0.23",
+  "version": "2.0.24",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.24",
+      "date": "2026-11-26",
+      "changes": [
+        "Ogólne poprawki responsywności, czytelności dolnego menu, zawijania napisów i odstępów formularzy; dodatkowe miejsce nad dolnym menu. Bez zmian działania narzędzi ani lokalnych danych."
+      ]
+    },
     {
       "version": "2.0.23",
       "date": "2026-11-26",
