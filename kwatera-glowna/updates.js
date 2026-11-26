@@ -727,7 +727,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  const style=document.createElement('style');
  style.textContent=`
  .kg-photo-controls{margin-top:8px!important;margin-bottom:10px!important;min-width:0;}
- .kg-photo-controls button{min-height:44px;white-space:normal;}
+ .kg-photo-controls button{min-height:34px!important;padding:6px 8px!important;font-size:12px!important;line-height:1.2!important;white-space:normal;}
+ .kg-photo-controls{gap:5px!important;}
+ .kg-photo-controls button+button{margin-block:0!important;}
+ [data-kg-target-adjust="1"] button{min-height:34px!important;padding:6px 8px!important;font-size:12px!important;line-height:1.2!important;}
  .kg-photo-controls input[type=range]{min-width:0;max-width:100%;}
  .kg-photo-zoom{margin-block:4px 12px!important;}
  `;
