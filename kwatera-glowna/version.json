@@ -1,7 +1,14 @@
 {
-  "version": "2.0.21",
+  "version": "2.0.22",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.22",
+      "date": "2026-11-26",
+      "changes": [
+        "Ręczny zapis wyniku przy zdjęciu: oddzielne liczniki wartości 0–10, suma wpisanych punktów, reset i zapis TXT. Bez automatycznego odczytu zdjęcia."
+      ]
+    },
     {
       "version": "2.0.21",
       "date": "2026-11-26",
