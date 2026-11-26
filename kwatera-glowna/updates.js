@@ -562,7 +562,7 @@ function drawTarget(){
 function mountControls(){
  syncState();const canvas=document.getElementById('targetCanvas');if(!canvas)return;
  const workspace=canvas.closest('.target-workspace')||canvas.parentElement;
- if(workspace.nextElementSibling?.dataset.kgTargetAdjust==='1'){updateRingConfirm();return;}
+ if(workspace.parentElement?.querySelector('[data-kg-target-adjust="1"]')){updateRingConfirm();return;}
  const panel=document.createElement('section');panel.dataset.kgTargetAdjust='1';panel.style.cssText='background:#191711;border:1px solid #786344;border-radius:6px;padding:12px;margin:12px 0;display:grid;gap:10px;color:#eedfc6;';
  const title=document.createElement('strong');title.textContent='KOREKTA ZDJĘCIA TARCZY';
  const help=document.createElement('small');help.textContent='Dostosuj obraz przed ręcznym oznaczaniem. Oryginalne zdjęcie, automatyczne wykrywanie i sposób liczenia punktów nie zmieniają się.';
@@ -719,4 +719,40 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     document.head.appendChild(style);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();
+
+/* 2.0.26: presentation-only rearrangement; existing handlers are retained. */
+;(()=>{
+ const css=document.createElement('style');
+ css.textContent=`
+ @media (max-width:900px){
+   .kg-preview-first-controls{margin-top:10px!important;margin-bottom:10px!important;}
+   .kg-preview-first-controls button{min-height:44px!important;white-space:normal;overflow-wrap:anywhere;}
+   .kg-preview-first-controls select,.kg-preview-first-controls input:not([type=range]){min-height:44px;}
+   .kg-preview-first-controls p{line-height:1.35;margin-block:6px;}
+   .kg-preview-first-controls{scroll-margin-top:12px;}
+ }
+ `;
+ document.head.append(css);
+ function arrange(){
+  const view=document.getElementById('view'),canvas=document.getElementById('targetCanvas');
+  if(!view||!canvas||!view.contains(canvas))return;
+  const photo=canvas.closest('.target-workspace')||canvas.parentElement;
+  if(!photo||!view.contains(photo))return;
+  const labels=new Set(['KALIBRACJA PUNKTACJI','AKTUALNIE OZNACZANY PIERŚCIEŃ','POWIĘKSZENIE']);
+  const anchors=Array.from(view.querySelectorAll('h1,h2,h3,h4,h5,strong,b,label,span,div,p')).filter(el=>el.childElementCount===0&&labels.has(el.textContent.trim().toUpperCase())&&!photo.contains(el));
+  for(const anchor of anchors){
+   let common=photo.parentElement;
+   while(common&&common!==view&&!common.contains(anchor))common=common.parentElement;
+   if(!common||!view.contains(common)||!common.contains(anchor))continue;
+   let photoBranch=photo,controlBranch=anchor;
+   while(photoBranch.parentElement&&photoBranch.parentElement!==common)photoBranch=photoBranch.parentElement;
+   while(controlBranch.parentElement&&controlBranch.parentElement!==common)controlBranch=controlBranch.parentElement;
+   if(photoBranch===controlBranch||photoBranch.parentElement!==common||controlBranch.parentElement!==common)continue;
+   controlBranch.classList.add('kg-preview-first-controls');
+   if(controlBranch.compareDocumentPosition(photoBranch)&Node.DOCUMENT_POSITION_FOLLOWING)common.insertBefore(photoBranch,controlBranch);
+  }
+ }
+ function init(){const view=document.getElementById('view');if(!view)return;new MutationObserver(arrange).observe(view,{childList:true,subtree:true});arrange();}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();
