@@ -1,7 +1,15 @@
 {
-  "version": "2.0.18",
+  "version": "2.0.19",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.19",
+      "date": "2026-11-26",
+      "changes": [
+        "Aparat fotograficzny: regulacja rozmiaru zwykłej okrągłej ramki, zapis czystego JPEG, edycja zdjęcia, powtórzenie i przywrócenie oryginalnych filtrów.",
+        "Moduł fotograficzny dostępny w pamięci offline PWA."
+      ]
+    },
     {
       "version": "2.0.18",
       "date": "2026-11-26",
