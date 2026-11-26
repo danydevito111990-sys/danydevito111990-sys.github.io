@@ -721,37 +721,63 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
 })();
 
-/* 2.0.26: presentation-only rearrangement; existing handlers are retained. */
+
+/* 2.0.27: image-view presentation; preserve original controls and event handlers. */
 ;(()=>{
- const css=document.createElement('style');
- css.textContent=`
- @media (max-width:900px){
-   .kg-preview-first-controls{margin-top:10px!important;margin-bottom:10px!important;}
-   .kg-preview-first-controls button{min-height:44px!important;white-space:normal;overflow-wrap:anywhere;}
-   .kg-preview-first-controls select,.kg-preview-first-controls input:not([type=range]){min-height:44px;}
-   .kg-preview-first-controls p{line-height:1.35;margin-block:6px;}
-   .kg-preview-first-controls{scroll-margin-top:12px;}
- }
+ const style=document.createElement('style');
+ style.textContent=`
+ .kg-photo-controls{margin-top:8px!important;margin-bottom:10px!important;min-width:0;}
+ .kg-photo-controls button{min-height:44px;white-space:normal;}
+ .kg-photo-controls input[type=range]{min-width:0;max-width:100%;}
+ .kg-photo-zoom{margin-block:4px 12px!important;}
  `;
- document.head.append(css);
+ document.head.append(style);
+ const norm=s=>String(s||'').trim().replace(/\\s+/g,' ').toLocaleLowerCase('pl');
+ function branches(a,b,view){
+   let p=a.parentElement;while(p&&view.contains(p)&&!p.contains(b))p=p.parentElement;
+   if(!p||!view.contains(p))return null;
+   let x=a,y=b;
+   while(x.parentElement&&x.parentElement!==p)x=x.parentElement;
+   while(y.parentElement&&y.parentElement!==p)y=y.parentElement;
+   return x!==y&&x.parentElement===p&&y.parentElement===p?{p,x,y}:null;
+ }
  function arrange(){
-  const view=document.getElementById('view'),canvas=document.getElementById('targetCanvas');
-  if(!view||!canvas||!view.contains(canvas))return;
-  const photo=canvas.closest('.target-workspace')||canvas.parentElement;
-  if(!photo||!view.contains(photo))return;
-  const labels=new Set(['KALIBRACJA PUNKTACJI','AKTUALNIE OZNACZANY PIERŚCIEŃ','POWIĘKSZENIE']);
-  const anchors=Array.from(view.querySelectorAll('h1,h2,h3,h4,h5,strong,b,label,span,div,p')).filter(el=>el.childElementCount===0&&labels.has(el.textContent.trim().toUpperCase())&&!photo.contains(el));
-  for(const anchor of anchors){
-   let common=photo.parentElement;
-   while(common&&common!==view&&!common.contains(anchor))common=common.parentElement;
-   if(!common||!view.contains(common)||!common.contains(anchor))continue;
-   let photoBranch=photo,controlBranch=anchor;
-   while(photoBranch.parentElement&&photoBranch.parentElement!==common)photoBranch=photoBranch.parentElement;
-   while(controlBranch.parentElement&&controlBranch.parentElement!==common)controlBranch=controlBranch.parentElement;
-   if(photoBranch===controlBranch||photoBranch.parentElement!==common||controlBranch.parentElement!==common)continue;
-   controlBranch.classList.add('kg-preview-first-controls');
-   if(controlBranch.compareDocumentPosition(photoBranch)&Node.DOCUMENT_POSITION_FOLLOWING)common.insertBefore(photoBranch,controlBranch);
-  }
+   const view=document.getElementById('view'),photo=document.getElementById('targetCanvas');
+   if(!view||!photo||!view.contains(photo))return;
+   let zoom=null,toolbar=null;
+   for(const input of view.querySelectorAll('input[type=range]')){
+     for(let el=input.parentElement;el&&el!==view&&!el.contains(photo);el=el.parentElement){
+       if(norm(el.textContent).includes('powiększenie')){zoom=el;break;}
+     }
+     if(zoom)break;
+   }
+   if(!zoom)return;
+   for(let el=zoom;el&&el!==view&&!el.contains(photo);el=el.parentElement){
+     if(Array.from(el.querySelectorAll('button')).some(b=>norm(b.textContent).includes('przesuń zdjęcie'))){toolbar=el;break;}
+   }
+   if(!toolbar)toolbar=zoom;
+   const pair=branches(photo,toolbar,view);
+   if(pair){
+     pair.y.classList.add('kg-photo-controls');
+     if(pair.x.nextElementSibling!==pair.y)pair.x.after(pair.y);
+   }
+   if(toolbar!==zoom&&toolbar.contains(zoom)){
+     let row=zoom;while(row.parentElement&&row.parentElement!==toolbar)row=row.parentElement;
+     if(row.parentElement===toolbar){
+       row.classList.add('kg-photo-zoom');
+       if(toolbar.firstElementChild!==row)toolbar.prepend(row);
+     }
+   }
+   const secondary=Array.from(view.querySelectorAll('h1,h2,h3,h4,h5,strong,b,label,span,div,p')).filter(el=>!el.contains(photo)&&!el.contains(toolbar)&&['kalibracja punktacji','aktualnie oznaczany pierścień'].includes(norm(el.textContent)));
+   for(const anchor of secondary){
+     const group=branches(photo,anchor,view);
+     if(!group||group.y.contains(toolbar))continue;
+     if(group.y.compareDocumentPosition(group.x)&Node.DOCUMENT_POSITION_FOLLOWING){
+       const t=branches(photo,toolbar,view);
+       if(t&&t.p===group.p&&t.x===group.x)t.y.after(group.y);
+       else group.x.after(group.y);
+     }
+   }
  }
  function init(){const view=document.getElementById('view');if(!view)return;new MutationObserver(arrange).observe(view,{childList:true,subtree:true});arrange();}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
