@@ -834,3 +834,25 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
  document.addEventListener('pointercancel',end,{capture:true,passive:false});
  document.addEventListener('lostpointercapture',e=>{if(drag?.id===e.pointerId)drag=null;},true);
 })();
+
+
+/* 2.0.30: compact presentation only. Disabled controls return when enabled. */
+;(()=>{
+ const style=document.createElement('style');
+ style.id='kg-compact-photo-ui';
+ style.textContent=`
+ #view:has(#targetCanvas) button:disabled,
+ #view:has(#targetCanvas) button[aria-disabled="true"]{display:none!important;}
+ .kg-photo-controls,.kg-photo-zoom,[data-kg-target-adjust="1"]{min-width:0;max-width:100%;box-sizing:border-box;}
+ .kg-photo-controls{margin-block:6px!important;padding:6px!important;gap:5px!important;}
+ .kg-photo-zoom{margin-block:2px 6px!important;}
+ .kg-photo-zoom input[type=range]{width:100%;margin-block:4px;}
+ .kg-photo-controls button,[data-kg-target-adjust="1"] button{min-height:34px!important;padding:5px 8px!important;font-size:12px!important;line-height:1.2!important;max-width:100%;margin:0!important;}
+ [data-kg-target-adjust="1"]{padding:8px!important;gap:6px!important;margin-block:8px!important;}
+ .kg-photo-controls :is(div,nav,section):has(>button):not(:has(>:not(button))),
+ [data-kg-target-adjust="1"] :is(div,nav,section):has(>button):not(:has(>:not(button))){display:flex!important;flex-wrap:wrap!important;gap:5px!important;align-items:center;}
+ .kg-photo-controls :is(div,nav,section):has(>button):not(:has(>:not(button)))>button{flex:1 1 auto!important;width:auto!important;}
+ .kg-photo-controls small,[data-kg-target-adjust="1"] small{line-height:1.3;}
+ `;
+ document.head.append(style);
+})();
