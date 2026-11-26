@@ -1,4 +1,4 @@
-const CACHE='kwatera-glowna-pwa-2.0.16-site';
+const CACHE='kwatera-glowna-pwa-2.0.17-site';
 const FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.svg','./updates.js','./version.json'];
 self.addEventListener('install',e=>e.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(FILES.map(x=>new Request(new URL(x,self.registration.scope),{cache:'reload'})));
 // Bootstrap the updater for legacy 2.0.1 clients, which have no update button.
