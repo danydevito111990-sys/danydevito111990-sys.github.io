@@ -1,7 +1,14 @@
 {
-  "version": "2.0.26",
+  "version": "2.0.27",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.27",
+      "date": "2026-11-26",
+      "changes": [
+        "Układ podglądu zdjęcia: istniejący panel pod zdjęciem, suwak powiększenia na początku panelu, pozostałe ustawienia niżej. Bez zmian obsługi gestów, kalibracji i punktacji."
+      ]
+    },
     {
       "version": "2.0.26",
       "date": "2026-11-26",
