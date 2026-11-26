@@ -1,7 +1,15 @@
 {
-  "version": "2.0.19",
+  "version": "2.0.20",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.20",
+      "date": "2026-11-26",
+      "changes": [
+        "Przeniesienie odnośnika do niezależnego aparatu fotograficznego z paska głównego do widoku skanera (na podstawie nagłówka widoku).",
+        "Porządek w interfejsie aparatu: kontrolki kadrowania tylko przed wykonaniem zdjęcia; zapis i zwykła edycja JPEG po wykonaniu zdjęcia."
+      ]
+    },
     {
       "version": "2.0.19",
       "date": "2026-11-26",
