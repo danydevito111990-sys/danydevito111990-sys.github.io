@@ -1,7 +1,14 @@
 {
-  "version": "2.0.20",
+  "version": "2.0.21",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.21",
+      "date": "2026-11-26",
+      "changes": [
+        "Dodatkowy uniwersalny tryb kadrowania fotograficznego: dwa współśrodkowe okręgi bez kalibracji punktowej, z dotychczasową regulacją widoczności i rozmiaru."
+      ]
+    },
     {
       "version": "2.0.20",
       "date": "2026-11-26",
