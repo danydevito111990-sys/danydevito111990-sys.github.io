@@ -1,7 +1,14 @@
 {
-  "version": "2.0.27",
+  "version": "2.0.28",
   "date": "2026-11-26",
   "history": [
+    {
+      "version": "2.0.28",
+      "date": "2026-11-26",
+      "changes": [
+        "Kompaktowe przyciski funkcji w widoku zdjęcia: mniejsza wysokość, czcionka i odstępy. Bez zmian działania funkcji."
+      ]
+    },
     {
       "version": "2.0.27",
       "date": "2026-11-26",
