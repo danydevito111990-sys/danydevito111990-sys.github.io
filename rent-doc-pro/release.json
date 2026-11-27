@@ -1,0 +1,13 @@
+{
+  "version": "1.6.1",
+  "history": [
+    {
+      "version": "1.6.1",
+      "changes": "Panel aktualizacji, sprawdzanie wersji i instrukcja wdrożenia w Plesku."
+    },
+    {
+      "version": "1.6",
+      "changes": "Kalendarz floty, rezerwacje i terminy zwrotów."
+    }
+  ]
+}
